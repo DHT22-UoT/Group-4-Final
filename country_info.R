@@ -2,6 +2,7 @@ library(dplyr)
 library(httr)
 library(jsonlite)
 library(wbstats)
+library(countrycode)
 
 ##### Extract data from the worldbank database
 
@@ -52,7 +53,14 @@ confirmed_cases <- GET('https://covid19-stats-api.herokuapp.com/api/v1/cases/cou
 confirmed_text <- content(confirmed_cases, "text")
 confirmed_json <- fromJSON(confirmed_text, flatten = T) 
 confirmed_df <- as.data.frame(confirmed_json)
+
+# Rename counts to confirmed
 confirmed_df <- dplyr::rename(confirmed_df, confirmed = count)
+
+# Retrieve iso3c codes and add as new column
+confirmed_df <- dplyr::mutate(confirmed_df, iso3c = countrycode::countryname(confirmed_df$country, destination = "iso3c"))
+confirmed_df["iso3c"][confirmed_df["country"] == "Micronesia"] <- "FSM"
+confirmed_df <- dplyr::select(confirmed_df, -country)
 
 # Get deaths due to COVID-19 for all countries
 
@@ -60,24 +68,26 @@ deaths_cases <- GET('https://covid19-stats-api.herokuapp.com/api/v1/cases/countr
 deaths_text <- content(deaths_cases, "text")
 deaths_json <- fromJSON(deaths_text, flatten = T) 
 deaths_df <- as.data.frame(deaths_json)
+deaths_df <- dplyr::select(deaths_df, -country)
+
+
+# Renme counts to deaths 
 deaths_df <- dplyr::rename(deaths_df, deaths = count)
 
-##### Merge COVID and WorldBank data
-country_info <- merge(country_indicators, confirmed_df, by = "country", all.x = T)
-country_info <- merge(country_info, deaths_df, by = "country", all.x = T)
+# Retrieve iso3c codes and add as new column
+deaths_df <- dplyr::mutate(deaths_df, iso3c = countrycode::countryname(deaths_df$country, destination = "iso3c"))
+deaths_df["iso3c"][deaths_df["country"] == "Micronesia"] <- "FSM"
 
-# Determine which countries are named differently in each dataframe
-
-mismatch <- setdiff(country_indicators$country, confirmed_df$country)
-mismatch
+##### Merge COVID and WorldBank data based on iso3c
+country_info <- merge(country_indicators, confirmed_df, by = "iso3c", all.x = T)
+country_info <- merge(country_info, deaths_df, by = "iso3c", all.x = T)
 
 ##### Calculate morbidity and mortality rate
-
 country_info <- country_info %>%
-                #morbidity rate per 100 000 individuals
-                mutate(morbidity_rate = round((confirmed / population)*100000,2)) %>%
-                #mortality rate per 100 000 individuals
-                mutate(mortality_rate = round((deaths/population)*100000,2))
+  #morbidity rate per 100 000 individuals
+  mutate(morbidity_rate = round((confirmed / population) * 100000, 2)) %>%
+  #mortality rate per 100 000 individuals
+  mutate(mortality_rate = round((deaths / population) * 100000, 2))
                 
 
 
