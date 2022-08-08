@@ -29,6 +29,7 @@ my_indicators = c("gni_percapita" = "NY.GNP.PCAP.CD", #gross national income
 
 # Create a new data frame that has all of the countries based off of population data availability
 country_indicators <- wb_data("SP.POP.TOTL", country = "countries_only", mrnev = 1, freq = "Y")
+country_indicators <- dplyr::rename(country_indicators, population = SP.POP.TOTL)
 
 # Remove columns that are not important for analysis
 country_indicators <- country_indicators %>% select(-c(date, obs_status, footnote, last_updated))
@@ -42,4 +43,44 @@ for (i in seq(1, length(my_indicators))){
 # Add region information to dataframe
 wb_countries <- wb_countries()
 country_indicators <- merge(country_indicators, wb_countries[c("country","region")], by = "country", all.x = TRUE)
+
+##### Gather information from COVID-19 API
+
+# Get confirmed COVID-19 for all countries
+
+confirmed_cases <- GET('https://covid19-stats-api.herokuapp.com/api/v1/cases/country/confirmed')
+confirmed_text <- content(confirmed_cases, "text")
+confirmed_json <- fromJSON(confirmed_text, flatten = T) 
+confirmed_df <- as.data.frame(confirmed_json)
+confirmed_df <- dplyr::rename(confirmed_df, confirmed = count)
+
+# Get deaths due to COVID-19 for all countries
+
+deaths_cases <- GET('https://covid19-stats-api.herokuapp.com/api/v1/cases/country/deaths')
+deaths_text <- content(deaths_cases, "text")
+deaths_json <- fromJSON(deaths_text, flatten = T) 
+deaths_df <- as.data.frame(deaths_json)
+deaths_df <- dplyr::rename(deaths_df, deaths = count)
+
+##### Merge COVID and WorldBank data
+country_info <- merge(country_indicators, confirmed_df, by = "country", all.x = T)
+country_info <- merge(country_info, deaths_df, by = "country", all.x = T)
+
+# Determine which countries are named differently in each dataframe
+
+mismatch <- setdiff(country_indicators$country, confirmed_df$country)
+mismatch
+
+##### Calculate morbidity and mortality rate
+
+country_info <- country_info %>%
+                #morbidity rate per 100 000 individuals
+                mutate(morbidity_rate = round((confirmed / population)*100000,2)) %>%
+                #mortality rate per 100 000 individuals
+                mutate(mortality_rate = round((deaths/population)*100000,2))
+                
+
+
+
+
 
