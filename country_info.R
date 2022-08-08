@@ -7,7 +7,7 @@ library(wbstats)
 
 new_cache <- wb_cache()
 
-search_new <- wb_search("literacy rate")
+search_new <- wb_search("population")
 
 search_new %>% print(n = Inf)
 
@@ -22,20 +22,24 @@ my_indicators = c("gni_percapita" = "NY.GNP.PCAP.CD", #gross national income
                   "human_capital_index" = "HD.HCI.OVRL",
                   "gender_equality" = "5.51.01.07.gender", # ratio of females to males that are educated
                   "unemployment" = "SL.UEM.TOTL.ZS",
-                  # "poverty_gap" = "SI.POV.NGAP", gives 400 error may have to find another indicator
-                  # "poverty_rate" = "SI.POV.NAPR.ZS", gives 400 error may have to find another indicator
-                  # "literacy_rate" = "IN.POV.LIT.RAT.TOTL", gives 400 error may have to find another indicator
+                  # "poverty_gap" = "SI.POV.NGAP", # gives 400 error may have to find another indicator
+                  # "poverty_rate" = "SI.POV.NAPR.ZS", # gives 400 error may have to find another indicator
+                  # "literacy_rate" = "IN.POV.LIT.RAT.TOTL", # gives 400 error may have to find another indicator
                   "gini" = "SI.POV.GINI")
 
 # Create a new data frame that has all of the countries based off of population data availability
-country_indicators <- wb_data(my_indicators[1], country = "countries_only", mrnev = 1, freq = "Y")
+country_indicators <- wb_data("SP.POP.TOTL", country = "countries_only", mrnev = 1, freq = "Y")
 
 # Remove columns that are not important for analysis
 country_indicators <- country_indicators %>% select(-c(date, obs_status, footnote, last_updated))
 
+# Add indicator information to dataframe
 for (i in seq(1, length(my_indicators))){
   indicator_data <- wb_data(my_indicators[i], country = "countries_only", mrnev = 1, freq = "Y")
   country_indicators <- merge(country_indicators, indicator_data[c(3,5)], by = "country", all.x = TRUE)
 }
 
+# Add region information to dataframe
+wb_countries <- wb_countries()
+country_indicators <- merge(country_indicators, wb_countries[c("country","region")], by = "country", all.x = TRUE)
 
