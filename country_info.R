@@ -7,25 +7,27 @@ library(sys)
 
 ##### Extract data from the worldbank database
 
-search_new <- wb_search("literacy rate")
+search_new <- wb_search("health expenditure")
 
 search_new %>% print(n = Inf)
 
 # Create a list of indicators of interest
-my_indicators = c("gni_percapita" = "NY.GNP.PCAP.CD", #gross national income
-                  "gdp" = "NY.GDP.MKTP.CD",
-                  "gdp_percapita" = "NY.GDP.PCAP.CD",
-                  "gdp_growth" = "NY.GDP.MKTP.KD.ZG",
-                  "life_expectancy_birth" = "SP.DYN.LE00.IN",
-                  "poverty_gap" = "SI.POV.UMIC.GP",
-                  "infant_mortality_rate" = "SP.DYN.IMRT.IN",
-                  "human_development" = "UNDP.HDI.XD",
-                  "human_capital_index" = "HD.HCI.OVRL",
-                  "gender_equality" = "5.51.01.07.gender", # ratio of females to males that are educated
-                  "unemployment" = "SL.UEM.TOTL.ZS",
-                  "literacy_rate" = "UIS.LR.AG25T64",
-                  "poverty_headcount_ratio" = "SI.POV.DDAY", # gives 400 error may have to find another indicator
-                  "gini" = "SI.POV.GINI")
+my_indicators = c("gni_percapita" = "NY.GNP.PCAP.CD", #economy
+                  "gdp" = "NY.GDP.MKTP.CD", #economy
+                  "gdp_percapita" = "NY.GDP.PCAP.CD", #economy
+                  "gdp_growth" = "NY.GDP.MKTP.KD.ZG", #economy
+                  "life_expectancy_birth" = "SP.DYN.LE00.IN", #health
+                  "poverty_gap" = "SI.POV.UMIC.GP", # economy
+                  "infant_mortality_rate" = "SP.DYN.IMRT.IN", #health
+                  "human_development" = "UNDP.HDI.XD", #education
+                  "human_capital_index" = "HD.HCI.OVRL", #education
+                  "health_expenditure_per_capita" = "SH.XPD.GHED.PC.CD", #health
+                  "health_expenditure_gdp" = "SH.XPD.KHEX.GD.ZS", #health
+                  "gender_equality" = "5.51.01.07.gender", # education
+                  "unemployment" = "SL.UEM.TOTL.ZS", # economy
+                  "literacy_rate" = "UIS.LR.AG25T64", # education
+                  "poverty_headcount_ratio" = "SI.POV.DDAY", # dispairty
+                  "gini" = "SI.POV.GINI") #disparity
 
 # Create a new data frame that has all of the countries based off of population data availability
 country_indicators <- wb_data("SP.POP.TOTL", country = "countries_only", mrnev = 1, freq = "Y")
