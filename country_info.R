@@ -43,7 +43,7 @@ for (i in seq(1, length(my_indicators))){
     country_indicators <- merge(country_indicators, indicator_data[c(3,5)], by = "country", all.x = TRUE)
   }, silent = F)
   
-  Sys.sleep(2)
+  Sys.sleep(1)
 }
 
 # Add region information to dataframe
@@ -103,11 +103,22 @@ country_info <- merge(country_info, recovered_df, by = "iso3c", all.x = T)
 
 ##### Calculate morbidity and mortality rates
 country_info <- country_info %>%
-  #morbidity rate per 100 000 individuals
+  # morbidity rate per 100 000 individuals
   mutate(morbidity_rate = round((confirmed / population) * 100000, 2)) %>%
-  #mortality rate per 100 000 individuals
-  mutate(mortality_rate = round((deaths / population) * 100000, 2))
+  # mortality rate per 100 000 individuals
+  mutate(mortality_rate = round((deaths / population) * 100000, 2)) %>%
+  # recovery rate per 100 000 individuals
+  mutate(recovery_rate = round((recovered / population) * 100000, 2))
+  
 
+##### Calculate ratios of confirmed, deaths, and recovered cases
+country_info <- country_info %>%
+  # confirmed ratio
+  mutate(case_ratio = confirmed / population) %>%
+  # deaths ratio
+  mutate(deaths_ratio = deaths / population) %>%
+  # recovered ratio
+  mutate(recovered_ratio = recovered / population)
 
 
 saveRDS(country_info, file = "country.info.RDS")
