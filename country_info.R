@@ -81,17 +81,34 @@ deaths_df <- dplyr::mutate(deaths_df, iso3c = countrycode::countryname(deaths_df
 deaths_df["iso3c"][deaths_df["country"] == "Micronesia"] <- "FSM"
 deaths_df <- dplyr::select(deaths_df, -country)
 
+# Get recovered due to COVID-19 for all countries
+
+recovered_cases <- GET('https://covid19-stats-api.herokuapp.com/api/v1/cases/country/recovered')
+recovered_text <- content(recovered_cases, "text")
+recovered_json <- fromJSON(recovered_text, flatten = T) 
+recovered_df <- as.data.frame(recovered_json)
+
+# Rename counts to recovered 
+recovered_df <- dplyr::rename(recovered_df, recovered = count)
+
+# Retrieve iso3c codes and add as new column
+recovered_df <- dplyr::mutate(recovered_df, iso3c = countrycode::countryname(recovered_df$country, destination = "iso3c"))
+recovered_df["iso3c"][recovered_df["country"] == "Micronesia"] <- "FSM"
+recovered_df <- dplyr::select(recovered_df, -country)
+
 ##### Merge COVID and WorldBank data based on iso3c
 country_info <- merge(country_indicators, confirmed_df, by = "iso3c", all.x = T)
 country_info <- merge(country_info, deaths_df, by = "iso3c", all.x = T)
+country_info <- merge(country_info, recovered_df, by = "iso3c", all.x = T)
 
-##### Calculate morbidity and mortality rate
+##### Calculate morbidity and mortality rates
 country_info <- country_info %>%
   #morbidity rate per 100 000 individuals
   mutate(morbidity_rate = round((confirmed / population) * 100000, 2)) %>%
   #mortality rate per 100 000 individuals
   mutate(mortality_rate = round((deaths / population) * 100000, 2))
-                
+
+
 
 saveRDS(country_info, file = "country.info.RDS")
 
