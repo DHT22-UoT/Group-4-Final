@@ -4,7 +4,6 @@ library(corrplot)
 library(ggplot2)
 library(ggcorrplot)
 library(tidyr)
-library(gridExtra) # unnecessary??
 library(cowplot)
 library(smplot2)
 
@@ -224,7 +223,7 @@ region_mort <- region_mort %>%
 region_mort_2 <- aggregate(region_mort$mortality_rate, by = list(region = region_mort$region), FUN = mean)
 
 # Rename the x with mortality rate mean
-region_mort_2 <- dplyr::rename(region_mort_2, mortality_mean = x)
+region_mort_2 <- rename(region_mort_2, mortality_mean = x)
 
 # Making region_mort_2 into a table 
 
@@ -233,4 +232,30 @@ region_barplot <- ggplot(region_mort_2, aes(region, mortality_mean)) +
   geom_col(fill = "green") + ggtitle("Mean Mortality Rate by Region") +
   ylab("Mean Mortality Rate") + xlab("Region") + theme(plot.title = element_text(hjust = 0.5))
 
-# Also want to include values on the graphs above each bar
+#### Creating classification for countries based on GNI ####
+
+gni_percap_df <- country_info %>%
+  select(country, gni_percapita, mortality_rate) %>%
+  # Create new column with categorization of GNI per capita
+  mutate(gni_class = ifelse(gni_percapita >= 12535, "High Income",
+         ifelse(gni_percapita >= 4046, "Upper-middle Income",
+         ifelse(gni_percapita >= 1036, "Lower-middle Income",
+         ifelse(gni_percapita < 1035, "Low Income", NA))))) %>%
+  # Filter out NA values
+  drop_na(mortality_rate) %>%
+  drop_na(gni_class)
+
+# Find mean mortality rate per gni class
+gni_percap_df_2 <- aggregate(gni_percap_df$mortality_rate, by = list(gni_class = gni_percap_df$gni_class), 
+                             FUN = mean)
+
+gni_percap_df_2 <- rename(gni_percap_df_2, mortality_mean = x)
+
+# Plot on bar plot 
+
+gni_class_barplot <- ggplot(gni_percap_df_2, aes(gni_class, mortality_mean)) + 
+  geom_col(fill = "green") + ggtitle("Mean Mortality Rate by GNI Class") +
+  ylab("Mean Mortality Rate") + xlab("GNI Class") + theme(plot.title = element_text(hjust = 0.5))
+
+
+
