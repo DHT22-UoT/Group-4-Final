@@ -219,6 +219,11 @@ sum(is.na(region_mort$mortality_rate))
 region_mort <- region_mort %>%
   drop_na(mortality_rate)
 
+# Creating boxplots for mortality rate based on Region
+region_boxplot <- ggplot(region_mort, aes(region, mortality_rate)) + 
+  geom_boxplot(fill = "green") + ggtitle("Mean Mortality Rate by Region") +
+  ylab("Mean Mortality Rate") + xlab("Region") + theme(plot.title = element_text(hjust = 0.5))
+
 # Calculate mean mortality rates for each region
 region_mort_2 <- aggregate(region_mort$mortality_rate, by = list(region = region_mort$region), FUN = mean)
 
@@ -245,6 +250,11 @@ gni_percap_df <- country_info %>%
   drop_na(mortality_rate) %>%
   drop_na(gni_class)
 
+# Create boxplot for mortality rates and gni classification
+gni_class_boxplot <- ggplot(gni_percap_df, aes(gni_class, mortality_rate)) + 
+  geom_boxplot(fill = "green") + ggtitle("Mean Mortality Rate by GNI Class") +
+  ylab("Mean Mortality Rate") + xlab("GNI Class") + theme(plot.title = element_text(hjust = 0.5))
+
 # Find mean mortality rate per gni class
 gni_percap_df_2 <- aggregate(gni_percap_df$mortality_rate, by = list(gni_class = gni_percap_df$gni_class), 
                              FUN = mean)
@@ -256,6 +266,3 @@ gni_percap_df_2 <- rename(gni_percap_df_2, mortality_mean = x)
 gni_class_barplot <- ggplot(gni_percap_df_2, aes(gni_class, mortality_mean)) + 
   geom_col(fill = "green") + ggtitle("Mean Mortality Rate by GNI Class") +
   ylab("Mean Mortality Rate") + xlab("GNI Class") + theme(plot.title = element_text(hjust = 0.5))
-
-
-
