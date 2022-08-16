@@ -221,7 +221,7 @@ region_mort <- region_mort %>%
 
 # Creating boxplots for mortality rate based on Region
 region_boxplot <- ggplot(region_mort, aes(region, mortality_rate)) + 
-  geom_boxplot(fill = "green") + ggtitle("Mean Mortality Rate by Region") +
+  geom_boxplot(fill = "#0072B2") + ggtitle("Mean Mortality Rate by Region") +
   ylab("Mean Mortality Rate") + xlab("Region") + theme(plot.title = element_text(hjust = 0.5))
 
 # Calculate mean mortality rates for each region
@@ -234,7 +234,7 @@ region_mort_2 <- rename(region_mort_2, mortality_mean = x)
 
 # Bar plot for region and mortality rate 
 region_barplot <- ggplot(region_mort_2, aes(region, mortality_mean)) + 
-  geom_col(fill = "green") + ggtitle("Mean Mortality Rate by Region") +
+  geom_col(fill = "#0072B2") + ggtitle("Mean Mortality Rate by Region") +
   ylab("Mean Mortality Rate") + xlab("Region") + theme(plot.title = element_text(hjust = 0.5))
 
 #### Creating classification for countries based on GNI ####
@@ -252,7 +252,7 @@ gni_percap_df <- country_info %>%
 
 # Create boxplot for mortality rates and gni classification
 gni_class_boxplot <- ggplot(gni_percap_df, aes(gni_class, mortality_rate)) + 
-  geom_boxplot(fill = "green") + ggtitle("Mean Mortality Rate by GNI Class") +
+  geom_boxplot(fill = "#0072B2") + ggtitle("Mean Mortality Rate by GNI Class") +
   ylab("Mean Mortality Rate") + xlab("GNI Class") + theme(plot.title = element_text(hjust = 0.5))
 
 # Find mean mortality rate per gni class
@@ -261,8 +261,57 @@ gni_percap_df_2 <- aggregate(gni_percap_df$mortality_rate, by = list(gni_class =
 
 gni_percap_df_2 <- rename(gni_percap_df_2, mortality_mean = x)
 
+# Make categories of income a factor
+gni_percap_df_2$gni_class <- factor(gni_percap_df_2$gni_class, levels = c("Low Income", "Lower-middle Income", "Upper-middle Income", "High Income"))
+ 
 # Plot on bar plot 
 
 gni_class_barplot <- ggplot(gni_percap_df_2, aes(gni_class, mortality_mean)) + 
-  geom_col(fill = "green") + ggtitle("Mean Mortality Rate by GNI Class") +
+  geom_col(fill = "#0072B2") + ggtitle("Mean Mortality Rate by GNI Class") +
   ylab("Mean Mortality Rate") + xlab("GNI Class") + theme(plot.title = element_text(hjust = 0.5))
+
+#### Creating classification for countries based on Health expenditure per capita ####
+
+# ~6870 highest - Norway 
+# ~1.8 lowest - Cameroon
+
+# Categories 
+# 1 - 1000 Low
+# 1001 - 2000 Lower-middle
+# 2001 - 3000 Upper-middle
+# 3001+ High 
+
+health_expend_df <- country_info %>%
+  select(country, health_expenditure_per_capita, mortality_rate) %>%
+  # Create new column with categorization of Health expend per capita
+  mutate(health_expend_class = ifelse(health_expenditure_per_capita >= 3001, "High Expenditure",
+                            ifelse(health_expenditure_per_capita >= 2001, "Upper-middle Expenditure",
+                                   ifelse(health_expenditure_per_capita >= 1001, "Lower-middle Expenditure",
+                                          ifelse(health_expenditure_per_capita < 1000, "Low Expenditure", NA))))) %>%
+  # Filter out NA values
+  drop_na(mortality_rate) %>%
+  drop_na(health_expenditure_per_capita)
+
+# Create boxplot for mortality rates and gni classification
+health_expend_df_boxplot <- ggplot(health_expend_df, aes(health_expend_class, mortality_rate)) + 
+  geom_boxplot(fill = "#0072B2") + ggtitle("Mean Mortality Rate by Health Expenditure Class") +
+  ylab("Mean Mortality Rate") + xlab("Health Expenditure Class") + theme(plot.title = element_text(hjust = 0.5))
+
+# Find mean mortality rate per gni class
+health_expend_df_2 <- aggregate(health_expend_df$mortality_rate, by = list(health_expend_class = health_expend_df$health_expend_class), 
+                             FUN = mean)
+
+health_expend_df_2 <- rename(health_expend_df_2, mortality_mean = x)
+
+health_expend_df_2$health_expend_class <- factor(health_expend_df_2$health_expend_class, levels = c("Low Expenditure", "Lower-middle Expenditure", "Upper-middle Expenditure", "High Expenditure"))
+  
+# Plot on bar plot 
+
+health_expend_barplot <- ggplot(health_expend_df_2, aes(health_expend_class, mortality_mean)) + 
+  geom_col(fill = "#0072B2") + ggtitle("Mean Mortality Rate by Health Expenditure Class") +
+  ylab("Mean Mortality Rate") + xlab("Expenditure Class") + theme(plot.title = element_text(hjust = 0.5))
+
+#### GDP Class Categorization ####
+
+
+
