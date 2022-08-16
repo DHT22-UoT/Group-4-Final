@@ -288,18 +288,18 @@ gni_class_barplot <- ggplot(gni_percap_df_2, aes(gni_class, mortality_mean)) +
 # ~1.8 lowest - Cameroon
 
 # Categories 
-# 1 - 1000 Low
-# 1001 - 2000 Lower-middle
-# 2001 - 3000 Upper-middle
-# 3001+ High 
+# 0 - 550 Low
+# 551 - 1600 Lower-middle
+# 1601 - 3050 Upper-middle
+# 3051+ High 
 
 health_expend_df <- country_info %>%
   select(country, health_expenditure_per_capita, mortality_rate) %>%
   # Create new column with categorization of Health expend per capita
-  mutate(health_expend_class = ifelse(health_expenditure_per_capita >= 3001, "High Expenditure",
-                            ifelse(health_expenditure_per_capita >= 2001, "Upper-middle Expenditure",
-                                   ifelse(health_expenditure_per_capita >= 1001, "Lower-middle Expenditure",
-                                          ifelse(health_expenditure_per_capita < 1000, "Low Expenditure", NA))))) %>%
+  mutate(health_expend_class = ifelse(health_expenditure_per_capita >= 3051, "High Expenditure",
+                            ifelse(health_expenditure_per_capita >= 1601, "Upper-middle Expenditure",
+                                   ifelse(health_expenditure_per_capita >= 551, "Lower-middle Expenditure",
+                                          ifelse(health_expenditure_per_capita < 550, "Low Expenditure", NA))))) %>%
   # Filter out NA values
   drop_na(mortality_rate) %>%
   drop_na(health_expenditure_per_capita)
