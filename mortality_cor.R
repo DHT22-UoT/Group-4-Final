@@ -23,8 +23,6 @@ ggcorrplot(first_cor_matrix)
 sum(is.na(country_info$human_development))
 # 167 NAs under human development index 
 
-human_dev_plot <- ggcorrplot(country_info["human_development"], country_info["mortality_rate"])
-
 #### Scatter plots for mortality rate ####
 
 # Potential positive relations
@@ -490,7 +488,7 @@ life_expect_df <- country_info %>%
 
 # Make life expectancy classes into factors 
 life_expect_df$life_expect_class <- factor(life_expect_df$life_expect_class,
-                                       levels = c("Low", "Low-moderate", "Moderare", "High-moderate","High"))
+                                       levels = c("Low", "Low-moderate", "Moderate", "High-moderate","High"))
 
 # Create boxplot for mortality rates and life expectancy classes
 life_expect_boxplot <- ggplot(life_expect_df, aes(life_expect_class, mortality_rate)) + 
