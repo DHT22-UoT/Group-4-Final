@@ -1,33 +1,58 @@
 ---
-title: "COVID-19 and Associated Socioeconomic Factors"
+title: "COVID-19 and Socioeconomic Factors"
 author: 'Group 4: Almost the Data Sisters'
-date: '2022-08-19'
 output:
   flexdashboard::flex_dashboard:
     orientation: rows
     source: embed
+
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+library(flexdashboard)
+covid_df <- readRDS(file="country.info.RDS")
 ```
 
-## R Markdown
+# Overview
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Row {data-height=200}
+-----------------------------------------------------------------------
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+### Value: Total Cases to Date
 
-```{r cars}
-summary(cars)
+```{r}
+flexdashboard::valueBox(sum(covid_df$confirmed, na.rm=TRUE), 
+                        caption = 'Total Confirmed Cases to Date',
+                        icon = "fas fa-capsules",
+                        color = "#fcbe42")
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+### Value: Total Deaths
+```{r}
+flexdashboard::valueBox(sum(covid_df$deaths, na.rm=TRUE),
+                        caption = 'Total Deaths',
+                        icon = "fas fa-bed",
+                        color = "#86dff7")
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+### Value: Reported Recoveries
+```{r}
+flexdashboard::valueBox(sum(covid_df$recovered, na.rm=TRUE),
+                        caption = 'Reported Recoveries',
+                        icon = "fas fa-heart",
+                        color = "#95d468")
+```
+
+Row {data-height=300}
+-----------------------------------------------------------------------
+
+### Global Summary {data-height=500}
+
+
+# Regional Data
+
+# Socioeconomic Data
+
+# About
