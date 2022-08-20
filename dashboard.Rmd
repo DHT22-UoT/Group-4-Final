@@ -1,5 +1,5 @@
 ---
-title: "COVID-19 and Socioeconomic Factors"
+title: "An Overview of a Global Pandemic"
 author: 'Group 4: Almost the Data Sisters'
 output:
   flexdashboard::flex_dashboard:
@@ -7,15 +7,24 @@ output:
     source: embed
 
 ---
+# Overview
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
 covid_df <- readRDS(file="country.info.RDS")
 ```
 
-# Overview
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+### Overview 
 
-Row {data-height=200}
+**COVID-19** is an infectious disease caused by the SARS-CoV-2 virus. The emergence of the COVID-19 global pandemic has received much attention in the scientific world, prompting researchers to actively explore the potential socioeconomic factors affecting the spread of COVID-19 and and mortality rates. 
+
+This dashboard is intended to provide a visual representation of selected socioeconomic 
+factors that may impact the spread of the disease as well as mortality rates across countries. 
+
+
+Row {data-height=150}
 -----------------------------------------------------------------------
 
 ### Value: Total Cases to Date
@@ -45,13 +54,15 @@ flexdashboard::valueBox(sum(covid_df$recovered, na.rm=TRUE),
                         color = "#95d468")
 ```
 
-Row {data-height=300}
+Row {data-height=200}
 -----------------------------------------------------------------------
 
 ### Global Summary {data-height=500}
 
 
 # Regional Data
+
+
 
 # Socioeconomic Data
 
