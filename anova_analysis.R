@@ -11,6 +11,7 @@ library(Rmisc)
 library("ggpubr")
 library(multcompView)
 library(ggthemes)
+library(plotrix)
 
 ### 1. ANOVA FOR GDP GROWTH RATE ###
 
@@ -86,7 +87,7 @@ plot(TukeyHSD(gdp_aov, conf.level= 0.95), las = 2, col= ifelse(gdp_tukey_df[,4] 
 cld <- multcompLetters4(gdp_aov, gdp_tukey_result)
 
 dt <- group_by(gdp_anova_data, gdp_growth_class) %>%
-  summarize(mean_mortality_rate = mean(mortality_rate), sd = sd(mortality_rate)) %>%
+  summarize(mean_mortality_rate = mean(mortality_rate), standard_error = std.error(mortality_rate)) %>%
   arrange(desc(mean_mortality_rate))
 
 cld <- as.data.frame.list(cld$gdp_growth_class)
@@ -94,7 +95,7 @@ dt$cld <- cld$Letters
 
 ggplot(dt, aes(gdp_growth_class, mean_mortality_rate)) + 
   geom_bar(stat = "identity", aes(fill = mean_mortality_rate), show.legend = FALSE) +
-  geom_errorbar(aes(ymin = mean_mortality_rate - sd, ymax = mean_mortality_rate + sd), width = 0.2) +
+  geom_errorbar(aes(ymin = mean_mortality_rate - standard_error, ymax = mean_mortality_rate + standard_error), width = 0.2) +
   labs(x = "GDP Growth Rate Class", y = "COVID-19 Mortality Rate") +
   geom_text(aes(label = cld$Letters), vjust = -0.5, hjust = -0.5) +
   theme_minimal() 
@@ -175,7 +176,7 @@ plot(TukeyHSD(hci_aov, conf.level= 0.95), las = 2, col= ifelse(hci_tukey_df[,4] 
 cld2 <- multcompLetters4(hci_aov, hci_tukey_result)
 
 dt2 <- group_by(hci_anova_data, human_cap_class) %>%
-  summarize(mean_mortality_rate = mean(mortality_rate), sd = sd(mortality_rate)) %>%
+  summarize(mean_mortality_rate = mean(mortality_rate), standard_error = std.error(mortality_rate)) %>%
   arrange(desc(mean_mortality_rate))
 
 cld2 <- as.data.frame.list(cld2$human_cap_class)
@@ -183,7 +184,7 @@ dt2$cld <- cld2$Letters
 
 ggplot(dt2, aes(human_cap_class, mean_mortality_rate)) + 
   geom_bar(stat = "identity", aes(fill = mean_mortality_rate), show.legend = FALSE) +
-  geom_errorbar(aes(ymin = mean_mortality_rate - sd, ymax = mean_mortality_rate + sd), width = 0.2) +
+  geom_errorbar(aes(ymin = mean_mortality_rate - standard_error, ymax = mean_mortality_rate + standard_error), width = 0.2) +
   labs(x = "Human Capital Index Class", y = "COVID-19 Mortality Rate") +
   geom_text(aes(label = cld2$Letters), vjust = -0.5, hjust = -0.5) +
   theme_minimal() 
@@ -266,7 +267,7 @@ plot(TukeyHSD(le_aov, conf.level= 0.95), las = 2, col= ifelse(le_tukey_df[,4] < 
 cld3 <- multcompLetters4(le_aov, le_tukey_result)
 
 dt3 <- group_by(le_anova_data, life_expect_class) %>%
-  summarize(mean_mortality_rate = mean(mortality_rate), sd = sd(mortality_rate)) %>%
+  summarize(mean_mortality_rate = mean(mortality_rate), standard_error = std.error(mortality_rate)) %>%
   arrange(desc(mean_mortality_rate))
 
 cld3 <- as.data.frame.list(cld3$life_expect_class)
@@ -274,7 +275,7 @@ dt3$cld <- cld3$Letters
 
 ggplot(dt3, aes(life_expect_class, mean_mortality_rate)) + 
   geom_bar(stat = "identity", aes(fill = mean_mortality_rate), show.legend = FALSE) +
-  geom_errorbar(aes(ymin = mean_mortality_rate - sd, ymax = mean_mortality_rate + sd), width = 0.2) +
+  geom_errorbar(aes(ymin = mean_mortality_rate - standard_error, ymax = mean_mortality_rate + standard_error), width = 0.2) +
   labs(x = "Human Capital Index Class", y = "COVID-19 Mortality Rate") +
   geom_text(aes(label = cld3$Letters), vjust = -0.5, hjust = -0.5) +
   theme_minimal() 
