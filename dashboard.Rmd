@@ -24,12 +24,12 @@ Inputs {.sidebar}
 This dashboard is intended to provide a visual representation of selected socioeconomic 
 factors that may impact the spread of the disease as well as mortality rates across countries. 
 
-**Instructions:** The interactive map on the right provides country-specific status relating to COVID-19. You may click to drag the map around, or click the '+' and '-' buttons to zoom in and out. You may click a marker to reveal a popup with information about the specific country. 
+**How to Use:** The interactive map on the right provides country-specific status relating to COVID-19. You may click to drag the map around, or click the '+' and '-' buttons to zoom in and out. You may click a marker to reveal a popup with information about the specific country. 
 
 Row {data-height=150}
 -----------------------------------------------------------------------
 
-### Value: Total Cases to Date
+### Value: Total Cases
 
 ```{r}
 flexdashboard::valueBox(sum(covid_df$confirmed, na.rm=TRUE), 
