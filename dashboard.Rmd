@@ -11,6 +11,7 @@ output:
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
+library(leaflet)
 covid_df <- readRDS(file="country.info.RDS")
 ```
 
@@ -23,6 +24,7 @@ Inputs {.sidebar}
 This dashboard is intended to provide a visual representation of selected socioeconomic 
 factors that may impact the spread of the disease as well as mortality rates across countries. 
 
+**Instructions:** The interactive map on the right provides country-specific status relating to COVID-19. You may click to drag the map around, or click the '+' and '-' buttons to zoom in and out. You may click a marker to reveal a popup with information about the specific country. 
 
 Row {data-height=150}
 -----------------------------------------------------------------------
@@ -54,14 +56,23 @@ flexdashboard::valueBox(sum(covid_df$recovered, na.rm=TRUE),
                         color = "#95d468")
 ```
 
-Row {data-height=200}
+Row {data-height=500}
 -----------------------------------------------------------------------
 
-### Global Summary {data-height=500}
+### Global Summary
+
+```{r map}
+covid_df %>%
+  leaflet() %>%
+  addProviderTiles(providers$Esri.OceanBasemap) 
+    # Need longitude & latitude columns in covid_df to add markers to the map
+```
 
 
 # Regional Data
 
+Inputs {.sidebar}
+-----------------------------------------------------------------------
 
 
 # Socioeconomic Data
