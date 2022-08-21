@@ -64,6 +64,7 @@ Row {data-height=500}
 ```{r map}
 covid_df %>%
   leaflet() %>%
+  setView(lng=0, lat=30, zoom=2) %>%
   addProviderTiles(providers$Esri.OceanBasemap) 
     # Need longitude & latitude columns in covid_df to add markers to the map
 ```
@@ -77,4 +78,37 @@ Inputs {.sidebar}
 
 # Socioeconomic Data
 
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+
+
 # About
+Row {.tabset}
+-----------------------------------------------------------------------
+
+### Dashboard
+
+### Data
+
+### Packages
+
+The following packages were used to construct the dashboard:
+
+* flexdashboard
+* leaflet
+
+Row {data-height=700}
+-----------------------------------------------------------------------
+### Dataset
+    
+```{r}
+DT::datatable(
+  covid_df,
+  filter = "top",
+  extensions = "Scroller",
+  rownames = FALSE,
+  style = "bootstrap",
+  class = "compact",
+  width = "100%",
+  options = list(deferRender = TRUE, scrollY = 300, scroller = TRUE))
+```
