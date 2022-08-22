@@ -79,6 +79,8 @@ Inputs {.sidebar}
 -----------------------------------------------------------------------
 
 
+
+
 # Socioeconomic Data
 
 Inputs {.sidebar}
@@ -115,3 +117,31 @@ DT::datatable(
   width = "100%",
   options = list(deferRender = TRUE, scrollY = 300, scroller = TRUE))
 ```
+
+
+# Test Map
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# Retrieving longitude & latitude dataset 
+long_lat <- read.csv("https://gist.githubusercontent.com/tadast/8827699/raw/f5cac3d42d16b78348610fc4ec301e9234f82821/countries_codes_and_coordinates.csv")
+
+# Cleaning dataset
+long_lat <- long_lat %>%
+  select(Alpha.3.code, Latitude..average., Longitude..average.)
+long_lat$Alpha.3.code <- trimws(long_lat$Alpha.3.code, which=c("both"))
+
+# Combine datasets based on ISO3 code
+covid_join <- left_join(covid_df, long_lat, by=c("iso3c"="Alpha.3.code"))
+
+```
+
+
+```{r map}
+covid_df %>%
+  leaflet(covid_join) %>%
+  addProviderTiles("OpenStreetMap.Mapnik") %>%
+```
+
