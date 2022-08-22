@@ -32,7 +32,8 @@ Row {data-height=150}
 ### Value: Total Cases
 
 ```{r}
-flexdashboard::valueBox(sum(covid_df$confirmed, na.rm=TRUE), 
+total_confirmed <- sum(covid_df$confirmed, na.rm=TRUE)
+flexdashboard::valueBox(formatC(total_confirmed, format = "d", big.mark = ","), 
                         caption = 'Total Confirmed Cases to Date',
                         icon = "fas fa-capsules",
                         color = "#fcbe42")
@@ -41,7 +42,8 @@ flexdashboard::valueBox(sum(covid_df$confirmed, na.rm=TRUE),
 
 ### Value: Total Deaths
 ```{r}
-flexdashboard::valueBox(sum(covid_df$deaths, na.rm=TRUE),
+total_deaths <- sum(covid_df$deaths, na.rm=TRUE)
+flexdashboard::valueBox(formatC(total_deaths, format = "d", big.mark = ","),
                         caption = 'Total Deaths',
                         icon = "fas fa-bed",
                         color = "#86dff7")
@@ -50,7 +52,8 @@ flexdashboard::valueBox(sum(covid_df$deaths, na.rm=TRUE),
 
 ### Value: Reported Recoveries
 ```{r}
-flexdashboard::valueBox(sum(covid_df$recovered, na.rm=TRUE),
+total_recovered <- sum(covid_df$recovered, na.rm=TRUE)
+flexdashboard::valueBox(formatC(total_recovered, format = "d", big.mark = ","),
                         caption = 'Reported Recoveries',
                         icon = "fas fa-heart",
                         color = "#95d468")
