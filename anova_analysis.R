@@ -12,6 +12,9 @@ library("ggpubr")
 library(multcompView)
 library(ggthemes)
 library(plotrix)
+detach(package:Rmisc)
+detach(package:plyr)
+library(dplyr)
 
 ### 1. ANOVA FOR GDP GROWTH RATE ###
 
@@ -283,3 +286,4 @@ ggplot(dt3, aes(life_expect_class, mean_mortality_rate)) +
 # The bar plot shows that the "High_moderate" and "High" Life Expectancy at Birth classes seem to have the highest mortality rate. 
 # Means not sharing any letter are significantly different at the 5% significance level.These are consistent with 
 # the previous plot.
+
