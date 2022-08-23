@@ -24,7 +24,7 @@ Inputs {.sidebar}
 This dashboard is intended to provide a visual representation of selected socioeconomic 
 factors that may impact the spread of the disease as well as mortality rates across countries. 
 
-**How to Use:** The interactive map on the right provides country-specific status relating to COVID-19. You may click to drag the map around, or click the '+' and '-' buttons to zoom in and out. You may hover over countries to reveal a popup with specific information about the specific country. 
+**How to Use:** The interactive map on the right provides country-specific status relating to COVID-19. You may click to drag the map around, or click the '+' and '-' buttons to zoom in and out. You may hover over countries to reveal a popup with information about the specific country. 
 
 Row {data-height=150}
 -----------------------------------------------------------------------
@@ -85,6 +85,7 @@ world_spdf <- readOGR(
 # Clean & prepare covid_df for merging
 covid_df <- covid_df %>%
   rename("ISO3" = "iso3c") %>%
+  # Select columns of interest
   select(ISO3, confirmed, deaths, recovered, morbidity_rate, mortality_rate, recovery_rate)
 
 # Combine spdf & covid_df datasets based on ISO3 code
@@ -104,7 +105,7 @@ mypalette <- colorBin(palette="YlOrBr",
                       na.color="transparent",
                       bins=mybins)
 
-# Prepare text for tooltips
+# Prepare text for popup
 mytext <- paste(
     "Country: ", world_spdf_join@data$NAME,"<br/>", 
     "Confirmed Cases (M): ", round(world_spdf_join@data$confirmed, 2), "<br/>", 
@@ -150,7 +151,7 @@ mypalette <- colorBin(palette="YlGnBu",
                       na.color="transparent",
                       bins=mybins)
 
-# Prepare text for tooltips
+# Prepare text for popup
 mytext <- paste(
     "Country: ", world_spdf_join@data$NAME,"<br/>", 
     "Deaths (K): ", round(world_spdf_join@data$deaths, 2), "<br/>", 
