@@ -121,7 +121,51 @@ DT::datatable(
 
 # Test Map with Plotly
 
+```{r}
+library(dplyr)
 
+# Retrieving longitude & latitude dataset 
+long_lat <- read.csv("https://gist.githubusercontent.com/tadast/8827699/raw/f5cac3d42d16b78348610fc4ec301e9234f82821/countries_codes_and_coordinates.csv")
+
+# Cleaning dataset
+long_lat <- long_lat %>%
+  select(Alpha.3.code, Latitude..average., Longitude..average.) %>%
+  rename("lat" = "Latitude..average.") %>%
+  rename("lng" = "Longitude..average.")
+long_lat$Alpha.3.code <- trimws(long_lat$Alpha.3.code, which=c("both"))
+
+# Combine datasets based on ISO3 code
+covid_join <- left_join(covid_df, long_lat, by=c("iso3c"="Alpha.3.code"))
+
+```
+
+
+### Confirmed Cases to Date
+```{r}
+
+library(leaflet)
+library(htmltools)
+library(rgdal)
+library(dplyr)
+library(plotly)
+
+confirmed_df <- covid_join %>%
+  select(iso3c, country, confirmed) %>%
+  mutate(popup = paste0(country,": ", formatC(confirmed, format = "d", big.mark = ",")))
+
+confirmed_graph <- plot_geo(confirmed_df,
+                            locationmode = "ISO-3") %>%
+  add_trace(locations = ~iso3c,
+            z= ~confirmed,
+            color = ~confirmed,
+            colors = "Blues",
+            text = ~popup,
+            hoverinfo = "text"
+            )
+
+confirmed_graph
+
+```
 
 
 
