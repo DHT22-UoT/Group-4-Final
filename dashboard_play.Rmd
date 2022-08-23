@@ -1,0 +1,80 @@
+---
+title: "Dashboard play"
+author: "O.P"
+date: "2022-08-23"
+output: flexboard::flexboard
+runtime: shiny
+---
+
+```{r}
+library(shiny)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+
+country_info <- readRDS("country.info.rds")
+life_expect_df_2 <- readRDS("life.expect.df.2.RDS")
+
+# Summarize data for the scatter plots
+region_mort_tb1 <- country_info %>%
+  dplyr::select(country, region, life_expectancy_birth, mortality_rate)
+
+region_mort_tb2 <- region_mort_tb1 %>%
+  # Create new column with categorization of life expectancy at birth
+  mutate(life_expect_class = ifelse(life_expectancy_birth >= 74.76, "High",
+                                  ifelse(life_expectancy_birth >= 70.07, "High-moderate",
+                                         ifelse(life_expectancy_birth >= 65.54, "Moderate",
+                                                ifelse(life_expectancy_birth >= 59.70, "Low-moderate",
+                                                       ifelse(life_expectancy_birth < 59.69, "Low", NA)))))) %>%
+  # Filter out NA values
+  drop_na(life_expect_class) %>%
+  drop_na(mortality_rate)
+
+region_mort_tb2$life_expect_class <- factor(region_mort_tb2$life_expect_class,
+                                       levels = c("Low", "Low-moderate", "Moderate","High-moderate","High"))
+
+#region_mort_tb2 <- aggregate(region_mort_tb2$mortality_rate, by = list(life_expect_class = #region_mort_tb2$life_expect_class),FUN = mean)
+
+#region_mort_tb2 <- rename(region_mort_tb2, mortality_mean = x)
+
+ui <- shinyUI(fluidPage(
+  titlePanel("Change in Mortality Rate Per Change in Life Expectancy in Regions Accross the World"),
+    sidebarLayout(
+        sidebarPanel(h3("Select Graph"), position="left",
+        helpText("Observe change in COVID-19 mortality rate in regions of the world with the change in life expectancy at birth."),
+        selectInput("graph", label = h5("Select Graph"), 
+                    choices = list("Scatter" = 1, "Bar" = 2, "All" = 3), selected = 1)),
+        mainPanel(h3("..."),
+                  plotOutput("plots"),
+                  position="right")
+    )
+)
+)
+
+server <- shinyServer(function(input, output){
+  output$plots <- renderPlot({
+    if(input$graph == 1) {
+       ggplot(region_mort_tb1, aes(x=life_expectancy_birth, y=mortality_rate)) +
+        geom_point() + facet_wrap(. ~ region, nrow = 2)
+  } else if (input$graph == 2) {
+    ggplot(life_expect_df_2, aes(life_expect_class, mortality_mean)) + geom_col()
+  } else {
+    ggplot(region_mort_tb1, aes(x=life_expectancy_birth, y=mortality_rate)) + geom_point()
+  }
+  })
+  
+  output$hover_info <- renderUI({
+        if(!is.null(input$plot_hover)){
+            hover=input$plot_hover
+            dist=sqrt((hover$x-region_mort_tb1$life_expectancy_birth)^2+(hover$y-region_mort_tb1$mortality_rate)^2)
+            cat("...")
+            if(min(dist) < 3)
+                region_mort_tb1$country[which.min(dist)]
+        }
+})
+})
+
+shinyApp(ui, server)
+
+```
+
