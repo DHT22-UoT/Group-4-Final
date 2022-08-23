@@ -24,7 +24,7 @@ Inputs {.sidebar}
 This dashboard is intended to provide a visual representation of selected socioeconomic 
 factors that may impact the spread of the disease as well as mortality rates across countries. 
 
-**How to Use:** The interactive map on the right provides country-specific status relating to COVID-19. You may click to drag the map around, or click the '+' and '-' buttons to zoom in and out. You may click a marker to reveal a popup with information about the specific country. 
+**How to Use:** The interactive map on the right provides country-specific status relating to COVID-19. You may click to drag the map around, or click the '+' and '-' buttons to zoom in and out. You may hover over countries to reveal a popup with specific information about the specific country. 
 
 Row {data-height=150}
 -----------------------------------------------------------------------
@@ -59,19 +59,132 @@ flexdashboard::valueBox(formatC(total_recovered, format = "d", big.mark = ","),
                         color = "#95d468")
 ```
 
-Row {data-height=500}
+Row {.tabset}
 -----------------------------------------------------------------------
 
-### Global Summary
+### Global Summary: Confirmed Cases
 
-```{r map1}
-covid_df %>%
-  leaflet() %>%
-  setView(lng=0, lat=30, zoom=2) %>%
-  addProviderTiles(providers$Esri.OceanBasemap) 
-    # Need longitude & latitude columns in covid_df to add markers to the map
+```{r spdf_data}
+library(leaflet)
+library(rgdal)
+library(dplyr)
+library(RColorBrewer)
+
+# Download world shape file 
+download.file("http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip", destfile="/Users/dannima/Desktop/MBiotech/MSC2011/Group-4-Final/world_shape_file.zip")
+
+# Read shape file with rgdal into a spdf (spatial polygon dataframe) object 
+world_spdf <- readOGR( 
+  dsn= paste0(getwd(),"/world_shape_file/") , 
+  layer="TM_WORLD_BORDERS_SIMPL-0.3",
+  verbose=FALSE)
 ```
 
+
+```{r combine_data}
+# Clean & prepare covid_df for merging
+covid_df <- covid_df %>%
+  rename("ISO3" = "iso3c") %>%
+  select(ISO3, confirmed, deaths, recovered, morbidity_rate, mortality_rate, recovery_rate)
+
+# Combine spdf & covid_df datasets based on ISO3 code
+world_spdf_join <- merge(world_spdf, covid_df, by="ISO3")
+
+# Clean the data object
+world_spdf_join@data$confirmed <- as.numeric(as.character(world_spdf_join@data$confirmed)) / 1000000 %>% round(2)
+world_spdf_join@data$deaths <- as.numeric(as.character(world_spdf_join@data$deaths)) / 1000 %>% round(2)
+```
+
+
+```{r map_confirmed}
+# Create a color palette with handmade bins
+mybins <- c(0, 1, 5, 10, 20, 50, Inf)
+mypalette <- colorBin(palette="YlOrBr",
+                      domain=world_spdf_join@data$confirmed,
+                      na.color="transparent",
+                      bins=mybins)
+
+# Prepare text for tooltips
+mytext <- paste(
+    "Country: ", world_spdf_join@data$NAME,"<br/>", 
+    "Confirmed Cases (M): ", round(world_spdf_join@data$confirmed, 2), "<br/>", 
+    "Morbidity Rate: ", world_spdf_join@data$morbidity_rate, 
+    sep="") %>%
+  lapply(htmltools::HTML)
+
+# Plot choropleth map with leaflet
+m <- leaflet(world_spdf_join) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  setView(lng=0, lat=30, zoom=2) %>%
+  addPolygons(fillColor = ~mypalette(confirmed), 
+              stroke = FALSE,
+              fillOpacity = 0.5,
+              smoothFactor = 0.5,
+              weight = 0.3,
+              color = "white",
+              label = mytext,
+              labelOptions = labelOptions(
+                style = list("font-weight" = "normal", padding = "3px 8px"),
+                textsize = "13px",
+                direction = "auto"
+              )
+  ) %>%
+  
+  # Add legend to the map
+  addLegend(pal = mypalette, 
+            values = ~confirmed, 
+            opacity=0.9, 
+            title = "COVID-19 Confirmed Cases (M)", 
+            position = "bottomleft")
+
+m
+```
+
+### Deaths
+
+```{r map_deaths}
+# Create a color palette with handmade bins
+mybins <- c(0, 1, 10, 30, 50, 100, 500, Inf)
+mypalette <- colorBin(palette="YlGnBu",
+                      domain=world_spdf_join@data$deaths,
+                      na.color="transparent",
+                      bins=mybins)
+
+# Prepare text for tooltips
+mytext <- paste(
+    "Country: ", world_spdf_join@data$NAME,"<br/>", 
+    "Deaths (K): ", round(world_spdf_join@data$deaths, 2), "<br/>", 
+    "Mortality Rate: ", world_spdf_join@data$mortality_rate, 
+    sep="") %>%
+  lapply(htmltools::HTML)
+
+# Plot choropleth map with leaflet
+m <- leaflet(world_spdf_join) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  setView(lng=0, lat=30, zoom=2) %>%
+  addPolygons(fillColor = ~mypalette(deaths), 
+              stroke = FALSE,
+              fillOpacity = 0.5,
+              smoothFactor = 0.5,
+              weight = 0.3,
+              color = "white",
+              label = mytext,
+              labelOptions = labelOptions(
+                style = list("font-weight" = "normal", padding = "3px 8px"),
+                textsize = "13px",
+                direction = "auto"
+              )
+  ) %>%
+  
+  # Add legend to the map
+  addLegend(pal = mypalette, 
+            values = ~deaths, 
+            opacity=0.9, 
+            title = "COVID-19 Deaths (K)", 
+            position = "bottomleft" )
+
+m
+```
 
 # Regional Data
 
@@ -119,132 +232,8 @@ DT::datatable(
 ```
 
 
-# Test Map with Plotly
-
-```{r}
-library(dplyr)
-
-# Retrieving longitude & latitude dataset 
-long_lat <- read.csv("https://gist.githubusercontent.com/tadast/8827699/raw/f5cac3d42d16b78348610fc4ec301e9234f82821/countries_codes_and_coordinates.csv")
-
-# Cleaning dataset
-long_lat <- long_lat %>%
-  select(Alpha.3.code, Latitude..average., Longitude..average.) %>%
-  rename("lat" = "Latitude..average.") %>%
-  rename("lng" = "Longitude..average.")
-long_lat$Alpha.3.code <- trimws(long_lat$Alpha.3.code, which=c("both"))
-
-# Combine datasets based on ISO3 code
-covid_join <- left_join(covid_df, long_lat, by=c("iso3c"="Alpha.3.code"))
-
-```
 
 
-### Confirmed Cases to Date
-```{r}
-
-library(leaflet)
-library(htmltools)
-library(rgdal)
-library(dplyr)
-library(plotly)
-
-confirmed_df <- covid_join %>%
-  select(iso3c, country, confirmed) %>%
-  mutate(popup = paste0(country,": ", formatC(confirmed, format = "d", big.mark = ",")))
-
-confirmed_graph <- plot_geo(confirmed_df,
-                            locationmode = "ISO-3") %>%
-  add_trace(locations = ~iso3c,
-            z= ~confirmed,
-            color = ~confirmed,
-            colors = "Blues",
-            text = ~popup,
-            hoverinfo = "text"
-            )
-
-confirmed_graph
-
-```
-
-# Test Map with Leaflet
-
-### Confirmed Cases to Date
-```{r spdf_data}
-library(leaflet)
-library(rgdal)
-library(dplyr)
-library(RColorBrewer)
-
-# Download world shape file 
-download.file("http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip", destfile="/Users/dannima/Desktop/MBiotech/MSC2011/Group-4-Final/world_shape_file.zip")
-
-# Read shape file with rgdal into a spdf (spatial polygon dataframe) object 
-world_spdf <- readOGR( 
-  dsn= paste0(getwd(),"/world_shape_file/") , 
-  layer="TM_WORLD_BORDERS_SIMPL-0.3",
-  verbose=FALSE)
-```
-
-
-```{r combine_data}
-# Clean & prepare covid_df for merging
-covid_df <- covid_df %>%
-  rename("ISO3" = "iso3c") %>%
-  select(ISO3, confirmed, deaths, recovered, morbidity_rate, mortality_rate, recovery_rate)
-
-# Combine spdf & covid_df datasets based on ISO3 code
-world_spdf_join <- merge(world_spdf, covid_df, by="ISO3")
-
-# Clean the data object
-world_spdf_join@data$confirmed <- as.numeric(as.character(world_spdf_join@data$confirmed)) / 1000000 %>% round(2)
-```
-
-
-```{r map}
-# Create a color palette with handmade bins
-mybins <- c(0, 1, 5, 10, 20, 50, Inf)
-mypalette <- colorBin(palette="YlOrBr",
-                      domain=world_spdf_join@data$confirmed,
-                      na.color="transparent",
-                      bins=mybins)
-
-
-# Prepare text for tooltips
-mytext <- paste(
-    "Country: ", world_spdf_join@data$NAME,"<br/>", 
-    "Confirmed Cases (M): ", round(world_spdf_join@data$confirmed, 2), "<br/>", 
-    "Morbidity Rate: ", world_spdf_join@data$morbidity_rate, 
-    sep="") %>%
-  lapply(htmltools::HTML)
-
-
-# Plot basic choropleth map with leaflet
-m <- leaflet(world_spdf_join) %>%
-  addProviderTiles(providers$CartoDB.Positron) %>%
-  setView(lat=10, lng=0 , zoom=2) %>%
-  addPolygons(fillColor = ~mypalette(confirmed), 
-              stroke = FALSE,
-              fillOpacity = 0.5,
-              smoothFactor = 0.5,
-              weight = 0.3,
-              color = "white",
-              label = mytext,
-              labelOptions = labelOptions(
-                style = list("font-weight" = "normal", padding = "3px 8px"),
-                textsize = "13px",
-                direction = "auto"
-              )
-  ) %>%
-  
-  addLegend(pal = mypalette, 
-            values = ~confirmed, 
-            opacity=0.9, 
-            title = "Confirmed COVID-19 Cases (M)", 
-            position = "bottomleft" )
-
-m
-```
 
 
 
