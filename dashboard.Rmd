@@ -125,7 +125,7 @@ DT::datatable(
 library(dplyr)
 
 # Retrieving longitude & latitude dataset 
-long_lat <- read.csv("https://gist.githubusercontent.com/tadast/8827699/raw/f5cac3d42d16b78348610fc4ec301e9234f82821/countries_codes_and_coordinates.csv")
+long_lat <- read.csv("")
 
 # Cleaning dataset
 long_lat <- long_lat %>%
