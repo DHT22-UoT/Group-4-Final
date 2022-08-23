@@ -64,7 +64,7 @@ Row {data-height=500}
 
 ### Global Summary
 
-```{r map}
+```{r map1}
 covid_df %>%
   leaflet() %>%
   setView(lng=0, lat=30, zoom=2) %>%
@@ -165,6 +165,85 @@ confirmed_graph <- plot_geo(confirmed_df,
 
 confirmed_graph
 
+```
+
+# Test Map with Leaflet
+
+### Confirmed Cases to Date
+```{r spdf_data}
+library(leaflet)
+library(rgdal)
+library(dplyr)
+library(RColorBrewer)
+
+# Download world shape file 
+download.file("http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip", destfile="/Users/dannima/Desktop/MBiotech/MSC2011/Group-4-Final/world_shape_file.zip")
+
+# Read shape file with rgdal into a spdf (spatial polygon dataframe) object 
+world_spdf <- readOGR( 
+  dsn= paste0(getwd(),"/world_shape_file/") , 
+  layer="TM_WORLD_BORDERS_SIMPL-0.3",
+  verbose=FALSE)
+```
+
+
+```{r combine_data}
+# Clean & prepare covid_df for merging
+covid_df <- covid_df %>%
+  rename("ISO3" = "iso3c") %>%
+  select(ISO3, confirmed, deaths, recovered, morbidity_rate, mortality_rate, recovery_rate)
+
+# Combine spdf & covid_df datasets based on ISO3 code
+world_spdf_join <- merge(world_spdf, covid_df, by="ISO3")
+
+# Clean the data object
+world_spdf_join@data$confirmed <- as.numeric(as.character(world_spdf_join@data$confirmed)) / 1000000 %>% round(2)
+```
+
+
+```{r map}
+# Create a color palette with handmade bins
+mybins <- c(0, 1, 5, 10, 20, 50, Inf)
+mypalette <- colorBin(palette="YlOrBr",
+                      domain=world_spdf_join@data$confirmed,
+                      na.color="transparent",
+                      bins=mybins)
+
+
+# Prepare text for tooltips
+mytext <- paste(
+    "Country: ", world_spdf_join@data$NAME,"<br/>", 
+    "Confirmed Cases (M): ", round(world_spdf_join@data$confirmed, 2), "<br/>", 
+    "Morbidity Rate: ", world_spdf_join@data$morbidity_rate, 
+    sep="") %>%
+  lapply(htmltools::HTML)
+
+
+# Plot basic choropleth map with leaflet
+m <- leaflet(world_spdf_join) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  setView(lat=10, lng=0 , zoom=2) %>%
+  addPolygons(fillColor = ~mypalette(confirmed), 
+              stroke = FALSE,
+              fillOpacity = 0.5,
+              smoothFactor = 0.5,
+              weight = 0.3,
+              color = "white",
+              label = mytext,
+              labelOptions = labelOptions(
+                style = list("font-weight" = "normal", padding = "3px 8px"),
+                textsize = "13px",
+                direction = "auto"
+              )
+  ) %>%
+  
+  addLegend(pal = mypalette, 
+            values = ~confirmed, 
+            opacity=0.9, 
+            title = "Confirmed COVID-19 Cases (M)", 
+            position = "bottomleft" )
+
+m
 ```
 
 
