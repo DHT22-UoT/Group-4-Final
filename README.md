@@ -4,9 +4,9 @@ This dashboard provides a summary of COVID-19 cases from 2020 globally and poten
 
 # Data Sources:
 
-**World Bank (wbstats)**: Used to access information on economic, regional, socioeconomic, and inequity indicators for each country.
+[**World Bank (wbstats)**:](https://datahelpdesk.worldbank.org/) Used to access information on economic, regional, socioeconomic, and inequity indicators for each country.
 
-**COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University**: Used to access COVID-19information of various countries from 2020 including total cases, deaths, and recoveries.
+[**COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University**:](https://github.com/CSSEGISandData/COVID-19) Used to access COVID-19information of various countries from 2020 including total cases, deaths, and recoveries.
 
 # Files:
 
