@@ -276,7 +276,7 @@ dt3$cld <- cld3$Letters
 ggplot(dt3, aes(life_expect_class, mean_mortality_rate)) + 
   geom_bar(stat = "identity", aes(fill = mean_mortality_rate), show.legend = FALSE) +
   geom_errorbar(aes(ymin = mean_mortality_rate - standard_error, ymax = mean_mortality_rate + standard_error), width = 0.2) +
-  labs(x = "Human Capital Index Class", y = "COVID-19 Mortality Rate") +
+  labs(x = "Life Expectancy at Birth Class", y = "COVID-19 Mortality Rate") +
   geom_text(aes(label = cld3$Letters), vjust = -0.5, hjust = -0.5) +
   theme_minimal() 
 
