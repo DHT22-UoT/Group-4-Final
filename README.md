@@ -10,6 +10,11 @@ This dashboard provides a summary of COVID-19 cases from 2020 globally and poten
 
 # Branches:
 
-## API
+## API (Imran)
+ * Collected general and indicator information of countries using wbstats package
+ * Collected COVID-19 case information for all countries using [COVID-19 stats API](https://documenter.getpostman.com/view/5352730/SzYbyxR5)
+ * **main files:****
+   *country_info.R: all data collection and retrieval from APIs
+   *country.info.RDS: dataframe containing all information retrieved from APIs
 
 
