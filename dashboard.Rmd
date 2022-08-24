@@ -71,7 +71,8 @@ library(dplyr)
 library(RColorBrewer)
 
 # Download world shape file 
-download.file("http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip", destfile="/Users/dannima/Desktop/MBiotech/MSC2011/Group-4-Final/world_shape_file.zip")
+download.file("http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip", destfile=paste0(getwd(), "/world_shape_file.zip"))
+
 
 # Read shape file with rgdal into a spdf (spatial polygon dataframe) object 
 world_spdf <- readOGR( 
