@@ -122,4 +122,3 @@ country_info <- country_info %>%
 
 
 saveRDS(country_info, file = "country.info.RDS")
-
