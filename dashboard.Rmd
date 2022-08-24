@@ -24,6 +24,7 @@ Inputs {.sidebar}
 This dashboard is intended to provide a visual representation of selected socioeconomic 
 factors that may impact the spread of the disease as well as mortality rates across countries. 
 
+<br>
 **How to Use:** The interactive map on the right provides country-specific status relating to COVID-19. You may click to drag the map around, or click the '+' and '-' buttons to zoom in and out. You may hover over countries to reveal a popup with information about the specific country. 
 
 Row {data-height=150}
@@ -229,9 +230,10 @@ The COVID-19 Data Repository operated by the **Johns Hopkins University Center f
 
 The following packages were used to construct the dashboard:
 
-* flexdashboard
-* leaflet
-* plotly
+* Data retrieval: httr, jsonlite, wbstats
+* Data manipulation: countrycode, dplyr, tidyr, tidyverse
+* Dashboard interface: flexdashboard, shiny 
+* Visualization: ggplot, ggcorrplot, ggpubr, ggthemes, leaflet, plotly, multcompView, corrplot, cowplot, plotrix
 
 
 Row {data-height=700}
