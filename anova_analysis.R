@@ -283,3 +283,4 @@ ggplot(dt3, aes(life_expect_class, mean_mortality_rate)) +
 # Means not sharing any letter are significantly different at the 5% significance level. These are consistent with 
 # the previous plot.
 
+
