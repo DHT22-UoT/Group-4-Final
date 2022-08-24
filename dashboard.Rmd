@@ -220,21 +220,18 @@ the spread of the disease across the globe. The dashboard was constructed in R w
 
 Data is retrieved from the [World Bank](https://datahelpdesk.worldbank.org/) and the [Johns Hopkins University](https://github.com/CSSEGISandData/COVID-19) Coronavirus repository.  
 
-The **World Bank** is an international financial organization that endeavors to reduce extreme poverty and promote sustainable prosperity by providing loans and grants to low and middle-income countries. World Bank provides free and open access to global development data, which are collected and reported annually or less often.
+The **World Bank** is an international financial organization that endeavors to reduce extreme poverty and promote sustainable prosperity by providing loans and grants to low and middle-income countries. World Bank provides free and open access to global development data, which are collected and reported annually or less often, depending on the specific indicator. 
 
-The **Johns Hopkins University Center for Systems Science and Engineering (JHU CCSE) Coronavirus repository** 
-
+The COVID-19 Data Repository operated by the **Johns Hopkins University Center for Systems Science and Engineering (JHU CCSE)** collects information from aggregated data sources like the World Health Organization (WHO) and the European Centre for Disease Prevention and Control (ECDC). The data on confirmed COVID-19 infection cases and deaths are updated on a daily basis, while the data on recoveries is no longer updated as of August 4th, 2021. For the construction of this dashboard, we accessed COVID-19 information of various countries from 2020 including total cases, deaths, and recoveries.
 
 <br>
-**Packages**  
+**Packages** 
+
 The following packages were used to construct the dashboard:
 
 * flexdashboard
 * leaflet
-
-
-**Assumptions**
-
+* plotly
 
 
 Row {data-height=700}
