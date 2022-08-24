@@ -5,7 +5,6 @@ library(ggplot2)
 library(ggcorrplot)
 library(tidyr)
 library(cowplot)
-library(smplot2)
 
 # Load RDS file containing country data 
 country_info <- readRDS("country.info.rds")
@@ -489,6 +488,8 @@ life_expect_df <- country_info %>%
 # Make life expectancy classes into factors 
 life_expect_df$life_expect_class <- factor(life_expect_df$life_expect_class,
                                        levels = c("Low", "Low-moderate", "Moderate", "High-moderate","High"))
+
+saveRDS(life_expect_df, file = "life.expect.df.RDS")
 
 # Create boxplot for mortality rates and life expectancy classes
 life_expect_boxplot <- ggplot(life_expect_df, aes(life_expect_class, mortality_rate)) + 
