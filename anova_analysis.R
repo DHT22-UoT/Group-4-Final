@@ -213,7 +213,7 @@ ggplot(dt2, aes(human_cap_class, mean_mortality_rate)) +
 #   drop_na(life_expect_class) %>%
 #   drop_na(mortality_rate)
 # 
-# # Make life expectancy classes into factors 
+# # Make life expectancy classes into factors
 # life_expect_df$life_expect_class <- factor(life_expect_df$life_expect_class,
 #                                            levels = c("Low", "Low-moderate", "Moderate", "High-moderate","High"))
 levels(life_expect_df$life_expect_class) <- c("Low", "Low_moderate", "Moderate", "High_moderate","High")
@@ -280,6 +280,6 @@ ggplot(dt3, aes(life_expect_class, mean_mortality_rate)) +
   theme_minimal() 
 
 # The bar plot shows that the "High_moderate" and "High" Life Expectancy at Birth classes seem to have the highest mortality rate. 
-# Means not sharing any letter are significantly different at the 5% significance level.These are consistent with 
+# Means not sharing any letter are significantly different at the 5% significance level. These are consistent with 
 # the previous plot.
 
