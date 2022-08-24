@@ -11,11 +11,6 @@ library("ggpubr")
 library(multcompView)
 library(ggthemes)
 library(plotrix)
-library(Rmisc)
-detach(package: Rmisc)
-detach(package: plyr)
-library(dplyr)
-
 
 ### 1. ANOVA FOR GDP GROWTH RATE ###
 
@@ -27,21 +22,21 @@ library(dplyr)
 # 5.04 - 9.41 upper-middle income
 # 9.41+ high income
 
-gdp_growth_df <- country_info %>%
-  select(country, gdp_growth, mortality_rate) %>%
-  # Create new column with categorization of GDP growth rate
-  mutate(gdp_growth_class = ifelse(gdp_growth >= 9.41, "High",
-                                   ifelse(gdp_growth >= 5.04, "Upper-middle",
-                                          ifelse(gdp_growth >= 1.02, "Middle",
-                                                 ifelse(gdp_growth >= -8.08, "Lower-middle",
-                                                        ifelse(gdp_growth < -8.08, "Low", NA)))))) %>%
-  # Filter out NA values
-  drop_na(mortality_rate) %>%
-  drop_na(gdp_growth_class)
+# gdp_growth_df <- country_info %>%
+#   select(country, gdp_growth, mortality_rate) %>%
+#   # Create new column with categorization of GDP growth rate
+#   mutate(gdp_growth_class = ifelse(gdp_growth >= 9.41, "High",
+#                                    ifelse(gdp_growth >= 5.04, "Upper-middle",
+#                                           ifelse(gdp_growth >= 1.02, "Middle",
+#                                                  ifelse(gdp_growth >= -8.08, "Lower-middle",
+#                                                         ifelse(gdp_growth < -8.08, "Low", NA)))))) %>%
+#   # Filter out NA values
+#   drop_na(mortality_rate) %>%
+#   drop_na(gdp_growth_class)
 
-# Make GDP growth classes into factors 
-gdp_growth_df$gdp_growth_class <- factor(gdp_growth_df$gdp_growth_class,
-                                         levels = c("Low", "Lower-middle", "Middle", "Upper-middle","High"))
+# # Make GDP growth classes into factors 
+# gdp_growth_df$gdp_growth_class <- factor(gdp_growth_df$gdp_growth_class,
+#                                          levels = c("Low", "Lower-middle", "Middle", "Upper-middle","High"))
 levels(gdp_growth_df$gdp_growth_class) <- c("Low", "Lower_middle", "Middle", "Upper_middle", "High")
 
 
@@ -117,21 +112,21 @@ ggplot(dt, aes(gdp_growth_class, mean_mortality_rate)) +
 # 0.56 - 0.64 upper middle
 # 0.64+ high
 
-human_cap_df <- country_info %>%
-  select(country, human_capital_index, mortality_rate) %>%
-  # Create new column with categorization of human cap index
-  mutate(human_cap_class = ifelse(human_capital_index >= 0.64, "High",
-                                  ifelse(human_capital_index >= 0.56, "Upper-middle",
-                                         ifelse(human_capital_index >= 0.47, "Middle",
-                                                ifelse(human_capital_index >= 0.39, "Lower-middle",
-                                                       ifelse(human_capital_index < 0.39, "Low", NA)))))) %>%
-  # Filter out NA values
-  drop_na(mortality_rate) %>%
-  drop_na(human_cap_class)
-
-# Make human cap index classes into factors 
-human_cap_df$human_cap_class <- factor(human_cap_df$human_cap_class,
-                                       levels = c("Low", "Lower-middle", "Middle", "Upper-middle","High"))
+# human_cap_df <- country_info %>%
+#   select(country, human_capital_index, mortality_rate) %>%
+#   # Create new column with categorization of human cap index
+#   mutate(human_cap_class = ifelse(human_capital_index >= 0.64, "High",
+#                                   ifelse(human_capital_index >= 0.56, "Upper-middle",
+#                                          ifelse(human_capital_index >= 0.47, "Middle",
+#                                                 ifelse(human_capital_index >= 0.39, "Lower-middle",
+#                                                        ifelse(human_capital_index < 0.39, "Low", NA)))))) %>%
+#   # Filter out NA values
+#   drop_na(mortality_rate) %>%
+#   drop_na(human_cap_class)
+# 
+# # Make human cap index classes into factors 
+# human_cap_df$human_cap_class <- factor(human_cap_df$human_cap_class,
+#                                        levels = c("Low", "Lower-middle", "Middle", "Upper-middle","High"))
 
 levels(human_cap_df$human_cap_class) <- c("Low", "Lower_middle", "Middle", "Upper_middle", "High")
 
@@ -206,21 +201,21 @@ ggplot(dt2, aes(human_cap_class, mean_mortality_rate)) +
 # 70.07 - 74.75 high-moderate
 # 74.76 high
 
-life_expect_df <- country_info %>%
-  select(country, life_expectancy_birth, mortality_rate) %>%
-  # Create new column with categorization of life expectancy at birth
-  mutate(life_expect_class = ifelse(life_expectancy_birth >= 74.76, "High",
-                                    ifelse(life_expectancy_birth >= 70.07, "High-moderate",
-                                           ifelse(life_expectancy_birth >= 65.54, "Moderate",
-                                                  ifelse(life_expectancy_birth >= 59.70, "Low-moderate",
-                                                         ifelse(life_expectancy_birth < 59.69, "Low", NA)))))) %>%
-  # Filter out NA values
-  drop_na(life_expect_class) %>%
-  drop_na(mortality_rate)
-
-# Make life expectancy classes into factors 
-life_expect_df$life_expect_class <- factor(life_expect_df$life_expect_class,
-                                           levels = c("Low", "Low-moderate", "Moderate", "High-moderate","High"))
+# life_expect_df <- country_info %>%
+#   select(country, life_expectancy_birth, mortality_rate) %>%
+#   # Create new column with categorization of life expectancy at birth
+#   mutate(life_expect_class = ifelse(life_expectancy_birth >= 74.76, "High",
+#                                     ifelse(life_expectancy_birth >= 70.07, "High-moderate",
+#                                            ifelse(life_expectancy_birth >= 65.54, "Moderate",
+#                                                   ifelse(life_expectancy_birth >= 59.70, "Low-moderate",
+#                                                          ifelse(life_expectancy_birth < 59.69, "Low", NA)))))) %>%
+#   # Filter out NA values
+#   drop_na(life_expect_class) %>%
+#   drop_na(mortality_rate)
+# 
+# # Make life expectancy classes into factors 
+# life_expect_df$life_expect_class <- factor(life_expect_df$life_expect_class,
+#                                            levels = c("Low", "Low-moderate", "Moderate", "High-moderate","High"))
 levels(life_expect_df$life_expect_class) <- c("Low", "Low_moderate", "Moderate", "High_moderate","High")
 
 ### 3.1 Preliminary analyses
@@ -280,7 +275,7 @@ dt3$cld <- cld3$Letters
 ggplot(dt3, aes(life_expect_class, mean_mortality_rate)) + 
   geom_bar(stat = "identity", aes(fill = mean_mortality_rate), show.legend = FALSE) +
   geom_errorbar(aes(ymin = mean_mortality_rate - standard_error, ymax = mean_mortality_rate + standard_error), width = 0.2) +
-  labs(x = "Life Expectancy Class", y = "COVID-19 Mortality Rate") +
+  labs(x = "Life Expectancy at Birth Class", y = "COVID-19 Mortality Rate") +
   geom_text(aes(label = cld3$Letters), vjust = -0.5, hjust = -0.5) +
   theme_minimal() 
 
