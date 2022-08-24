@@ -62,16 +62,6 @@ server <- shinyServer(function(input, output){
     ggplot(region_mort_tb1, aes(x=life_expectancy_birth, y=mortality_rate)) + geom_point()
   }
   })
-  
-  output$hover_info <- renderUI({
-        if(!is.null(input$plot_hover)){
-            hover=input$plot_hover
-            dist=sqrt((hover$x-region_mort_tb1$life_expectancy_birth)^2+(hover$y-region_mort_tb1$mortality_rate)^2)
-            cat("...")
-            if(min(dist) < 3)
-                region_mort_tb1$country[which.min(dist)]
-        }
-})
 })
 
 shinyApp(ui, server)
