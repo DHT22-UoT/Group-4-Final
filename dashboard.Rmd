@@ -5,7 +5,7 @@ output:
   flexdashboard::flex_dashboard:
     orientation: rows
     source: embed
-
+    
 ---
 # Overview
 
@@ -109,7 +109,7 @@ mypalette <- colorBin(palette="YlOrBr",
 # Prepare text for popup
 mytext <- paste(
     "Country: ", world_spdf_join@data$NAME,"<br/>", 
-    "Confirmed Cases (M): ", round(world_spdf_join@data$confirmed, 2), "<br/>", 
+    "Confirmed Cases: ", round(world_spdf_join@data$confirmed, 2), "M", "<br/>", 
     "Morbidity Rate: ", world_spdf_join@data$morbidity_rate, 
     sep="") %>%
   lapply(htmltools::HTML)
@@ -155,7 +155,7 @@ mypalette <- colorBin(palette="YlGnBu",
 # Prepare text for popup
 mytext <- paste(
     "Country: ", world_spdf_join@data$NAME,"<br/>", 
-    "Deaths (K): ", round(world_spdf_join@data$deaths, 2), "<br/>", 
+    "Deaths: ", round(world_spdf_join@data$deaths, 2), "K", "<br/>", 
     "Mortality Rate: ", world_spdf_join@data$mortality_rate, 
     sep="") %>%
   lapply(htmltools::HTML)
@@ -203,19 +203,39 @@ Inputs {.sidebar}
 
 
 # About
-Row {.tabset}
------------------------------------------------------------------------
 
+Row {data-height=500}
+-----------------------------------------------------------------------
 ### Dashboard
 
-### Data Source
+**An Overview of a Global Pandemic Dashboard**  
 
-### Packages
+This dashboard provides an overview of the worldwide pandemic of coronavirus
+disease 2019 (COVID-19), with an emphasis on the geographic locations and 
+socioeconomic status of different countries, and how these factors may impact 
+the spread of the disease across the globe. The dashboard was constructed in R with [Rmarkdown](https://rmarkdown.rstudio.com/) and the [flexdashboard](https://pkgs.rstudio.com/flexdashboard/) framework.
 
+<br>
+**Data Source** 
+
+Data is retrieved from the [World Bank](https://datahelpdesk.worldbank.org/) and the [Johns Hopkins University](https://github.com/CSSEGISandData/COVID-19) Coronavirus repository.  
+
+The **World Bank** is an international financial organization that endeavors to reduce extreme poverty and promote sustainable prosperity by providing loans and grants to low and middle-income countries. World Bank provides free and open access to global development data, which are collected and reported annually or less often.
+
+The **Johns Hopkins University Center for Systems Science and Engineering (JHU CCSE) Coronavirus repository** 
+
+
+<br>
+**Packages**  
 The following packages were used to construct the dashboard:
 
 * flexdashboard
 * leaflet
+
+
+**Assumptions**
+
+
 
 Row {data-height=700}
 -----------------------------------------------------------------------
