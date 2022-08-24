@@ -17,4 +17,12 @@ This dashboard provides a summary of COVID-19 cases from 2020 globally and poten
    * country_info.R: all data collection and retrieval from APIs
    * country.info.RDS: dataframe containing all information retrieved from APIs
 
+## anova_analysis_ (Selena)
+ * Drew and compared boxplots of the quantitative variable mortality rate for each category of Life Expectancy at Birth, GDP Growth Rate, and Human Capital Index (we initially selected these 3 indicators).
+ * Generated descriptive stats for the data.
+ * Determined whether the mean mortality rate between the different country categories based on the three selected indicators is different.
+ * Used Post-hoc test - Tukey’s test to determine which groups were different if the null hypothesis of ANOVA was rejected.
+ * Plotted the Tukey's test result using 95% confidence intervals, showing significant results in red.
+ * Also used a bar plot with standard error to show the group information and alternatively show the Tukey test result better, where the height of each bar is proportional to the mean of each group.
+ * Determined that the Life Expectancy at Birth was the best indicator.
 
