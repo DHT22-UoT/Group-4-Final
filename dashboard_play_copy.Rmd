@@ -40,6 +40,22 @@ region_mort_tb2$life_expect_class <- factor(region_mort_tb2$life_expect_class,
 
 #region_mort_tb2 <- rename(region_mort_tb2, mortality_mean = x)
 
+life_expect_df <- country_info %>%
+  select(country, life_expectancy_birth, mortality_rate) %>%
+  # Create new column with categorization of life expectancy at birth
+  mutate(life_expect_class = ifelse(life_expectancy_birth >= 74.76, "High",
+                                    ifelse(life_expectancy_birth >= 70.07, "High-moderate",
+                                           ifelse(life_expectancy_birth >= 65.54, "Moderate",
+                                                  ifelse(life_expectancy_birth >= 59.70, "Low-moderate",
+                                                         ifelse(life_expectancy_birth < 59.69, "Low", NA)))))) %>%
+  # Filter out NA values
+  drop_na(life_expect_class) %>%
+  drop_na(mortality_rate)
+
+# Make life expectancy classes into factors
+life_expect_df$life_expect_class <- factor(life_expect_df$life_expect_class,
+                                           levels = c("Low", "Low-moderate", "Moderate", "High-moderate","High"))
+
 levels(life_expect_df$life_expect_class) <- c("Low", "Low_moderate", "Moderate", "High_moderate","High")
 le_anova_data <- life_expect_df %>% 
   dplyr::select(life_expect_class, mortality_rate)
@@ -76,9 +92,9 @@ ui <- shinyUI(fluidPage(
 server <- shinyServer(function(input, output){
   #if(input$graph == 1) {
     output$plot1 <- renderPlotly({
-      ggplotly(ggplot(region_mort_tb1, aes(x=life_expectancy_birth, y=mortality_rate)) +
+      ggplotly(ggplot(region_mort_tb1, aes(text = paste("country: ", country), x = life_expectancy_birth, y = mortality_rate)) +
                  geom_point() + facet_wrap(. ~ region, nrow = 2) + 
-        labs(y = "COVID-19 Mortality Rate", x = "Life Expectancy at Birth (years)", title = "Relationship Between COVID-19 Mortality Rate and Life Expectancy"))
+        labs(y = "COVID-19 Mortality Rate", x = "Life Expectancy at Birth (years)", title = "Relationship Between COVID-19 Mortality Rate and Life Expectancy")) %>% layout(title = list(font = list(size = 15)))
     })
   #} else if (input$graph == 2) {
     output$plot2 <- renderPlotly({
@@ -89,17 +105,17 @@ server <- shinyServer(function(input, output){
       #      title = "Multiple Comparisons of Relationship Between Mortality Rate and Life Expectancy Class",
       #      subtitle = "Means not sharing any letter are significantly different at the 5% significance level (Tukey's test)") +
       geom_text(aes(label = cld3$Letters), vjust = -0.5, hjust = -0.5, col = "orange") +
-      theme_minimal()) %>%
+        theme_minimal()) %>%
         layout(title = list(text = paste0("ANOVA Result Showing Multiple Comparisons of Relationship Between", "<br>", "Mortality Rate and Life Expectancy Class",
                                     "<br>",
                                     "<sup>",
-                                     "Means not sharing any letter are significantly different at the 5% significance level (Tukey's test)","</sup>")), titlefont=list(size = 15),  margin = list(l=50, r=50, b=100, t=100, pad=4)) 
+                                     "Means not sharing any letter are significantly different at the 5% significance level (Tukey's test)","</sup>"), font = list(size = 15)),  margin = list(l = 50, r = 50, b = 100, t = 100, pad = 4)) 
         
     })
     ##Changed to static bar plot
   #} else {
     output$plot3 <- renderPlotly({ 
-      ggplotly(ggplot(region_mort_tb1, aes(x=life_expectancy_birth, y=mortality_rate)) + geom_point())
+      ggplotly(ggplot(region_mort_tb1, aes(text = paste("country: ", country), x=life_expectancy_birth, y=mortality_rate)) + labs(x = "Life Expectancy at Birth Class", y = "COVID-19 Mortality Rate", title = "Relationship Between COVID-19 Mortality Rate and Life Expectancy") + geom_point()) %>% layout(title = list(font = list(size = 15)))
     })
  # }
   
