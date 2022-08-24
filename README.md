@@ -24,5 +24,10 @@ This dashboard provides a summary of COVID-19 cases from 2020 globally and poten
  * Used Post-hoc test - Tukey’s test to determine which groups were different if the null hypothesis of ANOVA was rejected.
  * Plotted the Tukey's test result using 95% confidence intervals, showing significant results in red.
  * Also used a bar plot with standard error to show the group information and alternatively show the Tukey test result better, where the height of each bar is proportional to the mean of each group.
- * Determined that the Life Expectancy at Birth was the best indicator.
+ * Determined that the Life Expectancy at Birth was the best indicator and stored data into the cld3.RDS and dt3.RDS files.
+ * **main files:**
+   * anova_analysis.R
+   * cld3.RDS
+   * dt3.RDS
+   
 
