@@ -12,7 +12,7 @@ library(multcompView)
 library(ggthemes)
 library(plotrix)
 library(Rmisc)
-detach(package:Rmisc)
+detach(package: Rmisc)
 detach(package: plyr)
 library(dplyr)
 
