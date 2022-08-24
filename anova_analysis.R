@@ -272,12 +272,17 @@ dt3 <- group_by(le_anova_data, life_expect_class) %>%
 cld3 <- as.data.frame.list(cld3$life_expect_class)
 dt3$cld <- cld3$Letters
 
+saveRDS(dt3, file = "dt3.RDS")
+saveRDS(cld3, file = "cld3.RDS")
+
 ggplot(dt3, aes(life_expect_class, mean_mortality_rate)) + 
   geom_bar(stat = "identity", aes(fill = mean_mortality_rate), show.legend = FALSE) +
   geom_errorbar(aes(ymin = mean_mortality_rate - standard_error, ymax = mean_mortality_rate + standard_error), width = 0.2) +
   labs(x = "Life Expectancy at Birth Class", y = "COVID-19 Mortality Rate") +
   geom_text(aes(label = cld3$Letters), vjust = -0.5, hjust = -0.5) +
   theme_minimal() 
+
+
 
 # The bar plot shows that the "High_moderate" and "High" Life Expectancy at Birth classes seem to have the highest mortality rate. 
 # Means not sharing any letter are significantly different at the 5% significance level. These are consistent with 
