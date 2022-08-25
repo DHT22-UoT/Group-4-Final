@@ -30,4 +30,13 @@ This dashboard provides a summary of COVID-19 cases from 2020 globally and poten
    * cld3.RDS
    * dt3.RDS
    
+## dashboard (Danni)
+ * Formatting & Structuring dashboard
+ * Created interactive maps for the visualisation of COVID-19 cases
+ * **Tab contents:**
+   * Overview: Danni
+   * Regional data: Imran 
+   * Life Expectancy data: Olivia & Selena
+   * About: Danni
+   * Citation: Danni
 
