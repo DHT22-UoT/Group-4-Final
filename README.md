@@ -18,10 +18,10 @@ This dashboard provides a summary of COVID-19 cases from 2020 globally and poten
    * country.info.RDS: dataframe containing all information retrieved from APIs
 
 ## mortality_cor (Olivia)
-  * Completed correlation analysis of various indicators and mortality rate, morbidity rate, confirmed case ratios.
-  * Plotted strongest indicators on scatterplots and plotted regression lines to have visual of potential linear relationships of indicators and mortality rate.
-  * Created categories or "classes" of various indicator levels by calculating mean mortality rates of countries determined to be in each category and created box and bar plots to create visual of potential relationships and mortality rate.
-  * Chose top 3 indicators (life expectancy at birth, GDP growth rate and human capital index) based on relationships seen in correlation plots, scatterplots, boxplots and barplots. 
+  * Completed correlation analysis of various indicators and mortality rate, morbidity rate, and confirmed case ratios.
+  * Plotted strongest indicators on scatterplots and plotted regression lines to create a visual of potential linear relationships of indicators with mortality rate.
+  * Created categories or "classes" of various indicator levels by calculating mean mortality rates of countries determined to be in each category and created box and bar plots to create visual of potential relationships with mortality rate.
+  * Chose top 3 indicators (high life expectancy at birth, GDP growth rate and human capital index) based on relationships seen in correlation plots, scatterplots, boxplots and barplots. 
   * **Main files:**
     * mortality_cor.R
     * life.expect.df.2.RDS
