@@ -9,7 +9,7 @@ output:
     vertical_layout: scroll
 ---
 
-```{r}
+```{r Set up}
 library(ggplot2)
 library(shiny)
 library(plotly)
@@ -21,6 +21,8 @@ library(plotrix)
 country_info <- readRDS("country.info.rds")
 life_expect_df_2 <- readRDS("life.expect.df.2.RDS")
 life_expect_df <- readRDS("life.expect.df.RDS")
+dt3 <- readRDS("dt3.RDS")
+cld3 <- readRDS("cld3.RDS")
 
 # Summarize data for the scatter plots
 region_mort_tb1 <- country_info %>%
@@ -41,26 +43,6 @@ region_mort_tb2 <- region_mort_tb1 %>%
 life_expect_df$life_expect_class <- factor(life_expect_df$life_expect_class,
                                            levels = c("Low", "Low-moderate", "Moderate", "High-moderate","High"))
 
-levels(life_expect_df$life_expect_class) <- c("Low", "Low_moderate", "Moderate", "High_moderate","High")
-
-le_anova_data <- life_expect_df %>% 
-  dplyr::select(life_expect_class, mortality_rate)
-
-le_aov <- aov(mortality_rate ~ life_expect_class,
-              data = le_anova_data)
-le_tukey_result <- TukeyHSD(le_aov, conf.level = 0.95)
-
-le_tukey_matrix <- as.matrix (le_tukey_result)
-
-le_tukey_df <- as.data.frame(le_tukey_matrix[1])
-
-cld3 <- multcompLetters4(le_aov, le_tukey_result)
-
-dt3 <- group_by(le_anova_data, life_expect_class) %>%
-  dplyr::summarize(mean_mortality_rate = mean(mortality_rate), standard_error = std.error(mortality_rate)) %>%
-  dplyr::arrange(desc(mean_mortality_rate))
-cld3 <- as.data.frame.list(cld3$life_expect_class)
-dt3$cld <- cld3$Letters
 ```
 
 Sidebar {.sidebar}
@@ -68,38 +50,58 @@ Sidebar {.sidebar}
 
 Instructional text
 
-Explore metros
+Life Expectancy Data
 ======================================================================
 
 Row
 -----------------------------------------------------------------------
 
-### Plots
+### **Chart 5:** Relationship Between COVID-19 Mortality Rate and Life Expectancy per Regions Globally
 ```{r}
-ggplotly(ggplot(region_mort_tb1, aes(x=life_expectancy_birth, y=mortality_rate)) + geom_point() + facet_wrap(. ~ region, nrow = 2) + labs(y = "COVID-19 Mortality Rate", x = "Life Expectancy at Birth (years)", title = "Relationship Between COVID-19 Mortality Rate and Life Expectancy"))
+# ggplotly(ggplot(region_mort_tb1, aes(text = paste("country: ", country),x=life_expectancy_birth, y=mortality_rate, color = region)) + geom_point() + facet_wrap(. ~ region, nrow = 2) + labs(y = "COVID-19 Mortality Rate", x = "Life Expectancy at Birth (years)"))
 
 ```
+```{r Chart 5}
+x1 <- ggplot(region_mort_tb1, aes(text = paste("country: ",country),x=life_expectancy_birth, y=mortality_rate, color = region)) + geom_point() + facet_wrap(.~ region, nrow = 2) + labs(y = "COVID-19 Mortality Rate", x = "Life Expectancy at Birth (years)") + theme_minimal()
+
+x1 <- ggplotly(x1)
+
+x1 %>%
+  layout(showlegend = F)
+```
+
 
 Row 
 -----------------------------------------------------------------------
-### 
+### **Chart 6:** ANOVA Result Showing Multiple Comparisons of Relationship Between Mortality Rate and Life Expectancy Class
 ```{r}
-
-ggplotly(ggplot(dt3, aes(life_expect_class, mean_mortality_rate)) + 
-      geom_bar(stat = "identity", aes(fill = mean_mortality_rate), show.legend = FALSE) +
-      geom_errorbar(aes(ymin = mean_mortality_rate - standard_error, ymax = mean_mortality_rate + standard_error), width = 0.2) +
-      labs(x = "Life Expectancy at Birth Class", y = "COVID-19 Mortality Rate") +
-      #      title = "Multiple Comparisons of Relationship Between Mortality Rate and Life Expectancy Class",
-      #      subtitle = "Means not sharing any letter are significantly different at the 5% significance level (Tukey's test)") +
-      geom_text(aes(label = cld3$Letters), vjust = -0.5, hjust = -0.5, col = "orange") +
-      theme_minimal()) %>%
-        layout(title = list(text = paste0("ANOVA Result Showing Multiple Comparisons of Relationship Between", "<br>", "Mortality Rate and Life Expectancy Class",
-                                    "<br>",
-                                    "<sup>",
-                                     "Means not sharing any letter are significantly different at the 5% significance level (Tukey's test)","</sup>")), titlefont=list(size = 15),  margin = list(l=50, r=50, b=100, t=100, pad=4)) 
-        
-ggplotly(ggplot(region_mort_tb1, aes(x=life_expectancy_birth, y=mortality_rate)) +
-           geom_point())
-
+# ggplotly(ggplot(dt3, aes(life_expect_class, mean_mortality_rate)) +
+#       geom_bar(stat = "identity", aes(fill = mean_mortality_rate), show.legend = FALSE) +
+#       geom_errorbar(aes(ymin = mean_mortality_rate - standard_error, ymax = mean_mortality_rate + standard_error), width = 0.2) +
+#       labs(x = "Life Expectancy at Birth Class", y = "COVID-19 Mortality Rate") +
+#       #      title = "Multiple Comparisons of Relationship Between Mortality Rate and Life Expectancy Class",
+#       #      subtitle = "Means not sharing any letter are significantly different at the 5% significance level (Tukey's test)") +
+#       geom_text(aes(label=cld3$Letters), nudge_x = 0.25, nudge_y = 5, size = 3) +
+#         theme_minimal())
 ```
+```{r Chart 6}
+plot_ly(dt3, x = ~life_expect_class, y = ~mean_mortality_rate, type = 'bar', text = ~cld3$Letters, textposition = "none", colors = c("#16c91f", "hot pink", "#31befd"), color = ~cld3$Letters, error_y = list(array = ~standard_error, color = 'grey')) %>% layout(xaxis = list(title = 'Life Expectancy at Birth Class'), yaxis = list(title = 'Mean COVID-19 Mortality Rate', range = c(0, 185)))
+```
+
+### **Chart 7:** Global Life Expectancy at Birth in Relation to Mortality Rate 
+```{r Chart 7}
+x4 <- ggplot(region_mort_tb1, aes(text = paste("country: ",country), x=life_expectancy_birth, y=mortality_rate, colour=region)) + 
+           geom_point() + theme_minimal() + labs(y = "COVID-19 Mortality Rate", x = "Life Expectancy at Birth (years)")
+                 
+x4 <- ggplotly(x4) 
+
+x4 %>%
+  layout(legend = list(title=list(text = "Region"))) %>%
+  layout(legend = list(orientation = 'v', x = 0.01, y = 1)) %>%
+  layout(legend = list(font = list(size = 9)))
+```
+
+
+
+
 
