@@ -16,9 +16,19 @@ library(shiny)
 library(dplyr)
 library(plotly)
 library(leaflet)
+library(ggplot2)
+library(tidyverse)
+library(multcompView)
+library(plotrix)
 
 # Upload all data for all countries
 covid_df <- readRDS(file="country.info.RDS")
+
+# Upload other necessary data
+life_expect_df_2 <- readRDS("life.expect.df.2.RDS")
+life_expect_df <- readRDS("life.expect.df.RDS")
+dt3 <- readRDS("dt3.RDS")
+cld3 <- readRDS("cld3.RDS")
 
 # Summarize data to get mortality and morbidty for an entire region
 by_region <- covid_df %>% 
