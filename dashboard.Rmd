@@ -37,7 +37,7 @@ by_region <- covid_df %>%
   filter_at(vars(confirmed,deaths,population), all_vars(!is.na(.))) %>%
   summarise(regional_mortality = ((sum(deaths)/sum(population))*100000), regional_morbidity = ((sum(confirmed)/sum(population))*100000))
 
-# Summarize data for the scatter plots (Life Expectancy Page)
+# Summarize data for the scatterplots (Life Expectancy Page)
 region_mort_tb1 <- covid_df %>%
   dplyr::select(country, region, life_expectancy_birth, mortality_rate)
 region_mort_tb2 <- region_mort_tb1 %>%
@@ -54,7 +54,6 @@ region_mort_tb2 <- region_mort_tb1 %>%
 # Make life expectancy classes into factors
 life_expect_df$life_expect_class <- factor(life_expect_df$life_expect_class,
                                            levels = c("Low", "Low-moderate", "Moderate", "High-moderate","High"))
-
 ```
 
 Inputs {.sidebar}
@@ -75,7 +74,7 @@ Row {data-height=150}
 ### Value: Total Cases
 
 ```{r valuebox_total}
-total_confirmed <- sum(covid_df$confirmed, na.rm=TRUE)
+total_confirmed <- sum(covid_df$confirmed, na.rm = TRUE)
 flexdashboard::valueBox(formatC(total_confirmed, format = "d", big.mark = ","), 
                         caption = 'Total Confirmed Cases to Date',
                         icon = "fas fa-capsules", 
@@ -83,8 +82,9 @@ flexdashboard::valueBox(formatC(total_confirmed, format = "d", big.mark = ","),
 ```
 
 ### Value: Total Deaths
+
 ```{r valuebox_deaths}
-total_deaths <- sum(covid_df$deaths, na.rm=TRUE)
+total_deaths <- sum(covid_df$deaths, na.rm = TRUE)
 flexdashboard::valueBox(formatC(total_deaths, format = "d", big.mark = ","),
                         caption = 'Total Deaths',
                         icon = "fas fa-dizzy",
@@ -92,8 +92,9 @@ flexdashboard::valueBox(formatC(total_deaths, format = "d", big.mark = ","),
 ```
 
 ### Value: Reported Recoveries
+
 ```{r valuebox_recovery}
-total_recovered <- sum(covid_df$recovered, na.rm=TRUE)
+total_recovered <- sum(covid_df$recovered, na.rm = TRUE)
 flexdashboard::valueBox(formatC(total_recovered, format = "d", big.mark = ","),
                         caption = 'Reported Recoveries',
                         icon = "fas fa-heart",
@@ -114,12 +115,11 @@ library(RColorBrewer)
 # Download world shape file 
 download.file("http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip", destfile=paste0(getwd(), "/world_shape_file.zip"))
 
-
 # Read shape file with rgdal into a spdf (spatial polygon dataframe) object 
 world_spdf <- readOGR( 
-  dsn= paste0(getwd(),"/world_shape_file/") , 
-  layer="TM_WORLD_BORDERS_SIMPL-0.3",
-  verbose=FALSE)
+  dsn = paste0(getwd(),"/world_shape_file/") , 
+  layer = "TM_WORLD_BORDERS_SIMPL-0.3",
+  verbose = FALSE)
 ```
 
 
@@ -131,7 +131,7 @@ covid_cleaned <- covid_df %>%
   select(ISO3, confirmed, deaths, recovered, morbidity_rate, mortality_rate, recovery_rate)
 
 # Combine spdf & covid_df datasets based on ISO3 code
-world_spdf_join <- merge(world_spdf, covid_cleaned, by="ISO3")
+world_spdf_join <- merge(world_spdf, covid_cleaned, by = "ISO3")
 
 # Clean the data object
 world_spdf_join@data$confirmed <- as.numeric(as.character(world_spdf_join@data$confirmed)) / 1000000 %>% round(2)
@@ -142,23 +142,23 @@ world_spdf_join@data$deaths <- as.numeric(as.character(world_spdf_join@data$deat
 ```{r map_confirmed}
 # Create a color palette with handmade bins
 mybins <- c(0, 1, 5, 10, 20, 50, Inf)
-mypalette <- colorBin(palette="YlOrBr",
-                      domain=world_spdf_join@data$confirmed,
-                      na.color="transparent",
-                      bins=mybins)
+mypalette <- colorBin(palette = "YlOrBr",
+                      domain = world_spdf_join@data$confirmed,
+                      na.color = "transparent",
+                      bins = mybins)
 
-# Prepare text for popup
+# Prepare text for tooltip
 mytext <- paste(
     "Country: ", world_spdf_join@data$NAME,"<br/>", 
     "Confirmed Cases (M): ", round(world_spdf_join@data$confirmed, 2), "<br/>", 
     "Morbidity Rate: ", world_spdf_join@data$morbidity_rate, 
-    sep="") %>%
+    sep = "") %>%
   lapply(htmltools::HTML)
 
 # Plot choropleth map with leaflet
 m <- leaflet(world_spdf_join) %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
-  setView(lng=0, lat=30, zoom=2) %>%
+  setView(lng = 0, lat = 30, zoom = 2) %>%
   addPolygons(fillColor = ~mypalette(confirmed), 
               stroke = FALSE,
               fillOpacity = 0.5,
@@ -222,7 +222,7 @@ m <- leaflet(world_spdf_join) %>%
   # Add legend to the map
   addLegend(pal = mypalette, 
             values = ~deaths, 
-            opacity=0.9, 
+            opacity = 0.9, 
             title = "COVID-19 Deaths (K)", 
             position = "bottomleft" )
 
@@ -243,7 +243,7 @@ Here we can see large differences in rates between regions around the world and 
 * **Population Density:** Although some regions may share similar populations, those with greater population density may be subject to increased transmission. Higher case numbers and rates can be expected in regions with greater density. ([PLOS ONE](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0242398))
 
 ```{r region}
-# region selection
+# Region selection
 selectInput("region", label = h3("Region of Interest:"),
             choices = c("East Asia & Pacific",
                         "Europe & Central Asia",
@@ -252,19 +252,18 @@ selectInput("region", label = h3("Region of Interest:"),
                         "Middle East & North Africa",
                         "South Asia",
                         "Sub-Saharan Africa"), selected = "All")
-
 ```
 
 **How to Use:** To view the morbidity and mortality rates for countries within a specific region, choose a region from the drop down menu. For comparing countries with similar rates in Charts 3 and 4, you can click and drag to select a portion of them.
 
 Row {.tabset}
----
+-----------------------------------------------------------------------
 
 ### **Chart 1:** COVID-19 cases per 100,000 individuals across all regions
 
 ```{r morbidity_region}
 
-# static graph for morbidity across all regions
+# Static graph for morbidity across all regions
 plot_ly(by_region, 
         x = ~region, 
         y = ~regional_morbidity, 
@@ -280,7 +279,7 @@ plot_ly(by_region,
         colors = "#fec44f") %>% 
   layout(yaxis = list(title = "<b>Cases per 100,000 Individuals", type = "log", fixedrange = T), 
          xaxis = list(title = "<b>World Bank Region", tickangle = 0, tickformat = "digits", tickfont = list(size = 11.3), fixedrange = T),
-         uniformtext=list(minisize=8, mode = "hide"),
+         uniformtext = list(minisize = 8, mode = "hide"),
          showlegend = F)
 ```
 
@@ -288,7 +287,7 @@ plot_ly(by_region,
 
 ```{r mortality_region}
 
-# static graph for mortality across all regions
+# Static graph for mortality across all regions
 plot_ly(by_region, 
         x = ~region, 
         y = ~regional_mortality, 
@@ -302,24 +301,24 @@ plot_ly(by_region,
         colors = "#225ea8") %>% 
   layout(yaxis = list(title = "<b>Deaths per 100,000 Individuals</b>", type = "log", fixedrange = T), 
          xaxis = list(title = "<b>World Bank Region</b>", tickangle = 0, tickfont = list(size = 11.3)),
-         uniformtext=list(minisize=8, mode = "hide"),
+         uniformtext = list(minisize = 8, mode = "hide"),
          showlegend = F)
-
 ```
 
 Row
----
+-----------------------------------------------------------------------
 
 ### **Chart 3:** COVID-19 cases per 100,000 individuals by country in a given region
+
 ```{r morbidity_plot}
 
-# make dataset reactive based on region choice
+# Make dataset reactive based on region choice
 morb_data <- reactive({
   covid_df %>%
     filter(region == input$region)
 })
 
-# reactive graph for country morbidity within individual regions 
+# Reactive graph for country morbidity within individual regions 
 renderPlotly({
   plot_ly(morb_data(),
           x = ~country,
@@ -331,22 +330,22 @@ renderPlotly({
           colors = "#fec44f" ) %>%
     layout(yaxis = list(title = "<b>Cases per 100,000 Individuals</b>", fixedrange = T),
            xaxis = list(title = "<b>Country Economy</b>", tickangle = 45, vjust = 1,  categoryorder = "total ascending"),
-           uniformtext=list(minisize=8, mode = "hide"),
+           uniformtext = list(minisize = 8, mode = "hide"),
            showlegend = F)
 })
-
 ```
 
 ### **Chart 4:** COVID-19 deaths per 100,000 individuals by country in a given region
+
 ```{r mortality_plot}
 
-# make dataset reactive based on region choice
+# Make dataset reactive based on region choice
 mort_data <- reactive({
   covid_df %>%
     filter(region == input$region)
 })
 
-# reactive graph for country mortality within individual regions 
+# Reactive graph for country mortality within individual regions 
 renderPlotly({
   plot_ly(mort_data(),
           x = ~country,
@@ -358,13 +357,10 @@ renderPlotly({
           colors = "#225ea8" )%>%
     layout(yaxis = list(title = "<b>Deaths per 100,000 Individuals</b>", fixedrange = T),
            xaxis = list(title = "<b>Country Economy</b>", tickangle = 45, categoryorder = "total ascending"),
-           uniformtext=list(minisize=8, mode = "hide"),
+           uniformtext = list(minisize = 8, mode = "hide"),
            showlegend = F)
 })
-
-
 ```
-
 
 # Life Expectancy Data
 
@@ -388,34 +384,35 @@ Countries were categorized on their average life expectancy based on the followi
 
 **How to use:** to view the mortality rate and the average life expectancy for a specific country, drag your cursor over the point. 
 
-
 Row
 -----------------------------------------------------------------------
 
 ### **Chart 5:** Relationship Between COVID-19 Mortality Rate and Life Expectancy per Regions Globally
+
 ```{r Chart 5}
-x1 <- ggplot(region_mort_tb1, aes(text = paste("country: ",country),x=life_expectancy_birth, y=mortality_rate, color = region)) + geom_point() + facet_wrap(.~ region, nrow = 2) + labs(y = "COVID-19 Mortality Rate", x = "Life Expectancy at Birth (years)") + theme_minimal() + theme(axis.title = element_text(face="bold"))
+x1 <- ggplot(region_mort_tb1, aes(text = paste("country: ",country),x = life_expectancy_birth, y = mortality_rate, color = region)) + geom_point() + facet_wrap(.~ region, nrow = 2) + labs(y = "COVID-19 Mortality Rate", x = "Life Expectancy at Birth (years)") + theme_minimal() + theme(axis.title = element_text(face = "bold"))
 x1 <- ggplotly(x1)
 x1 %>%
   layout(showlegend = F)
 ```
 
-
 Row 
 -----------------------------------------------------------------------
 ### **Chart 6:** ANOVA Result Showing Multiple Comparisons of Relationship Between Mortality Rate and Life Expectancy Class
+
 ```{r Chart 6}
 plot_ly(dt3, x = ~life_expect_class, y = ~mean_mortality_rate, type = 'bar', text = ~cld3$Letters, textposition = "none", colors = c("#16c91f", "hot pink", "#31befd"), color = ~cld3$Letters, error_y = list(array = ~standard_error, color = 'grey')) %>% layout(xaxis = list(title = '<b>Life Expectancy at Birth Class</b>'), yaxis = list(title = '<b>Mean COVID-19 Mortality Rate</b>', range = c(0, 185)))
 ```
 
 ### **Chart 7:** Global Life Expectancy at Birth in Relation to Mortality Rate 
+
 ```{r Chart 7}
-x4 <- ggplot(region_mort_tb1, aes(text = paste("country: ",country), x=life_expectancy_birth, y=mortality_rate, colour=region)) + 
+x4 <- ggplot(region_mort_tb1, aes(text = paste("country: ",country), x = life_expectancy_birth, y = mortality_rate, colour=region)) + 
            geom_point() + theme_minimal() + labs(y = "COVID-19 Mortality Rate", x = "Life Expectancy at Birth (years)") + theme(axis.title = element_text(face="bold"))
                  
 x4 <- ggplotly(x4) 
 x4 %>%
-  layout(legend = list(title=list(text = "Region"))) %>%
+  layout(legend = list(title = list(text = "Region"))) %>%
   layout(legend = list(orientation = 'v', x = 0.01, y = 1)) %>%
   layout(legend = list(font = list(size = 9)))
 ```
@@ -458,8 +455,7 @@ The following packages were used to construct the dashboard:
 * Dashboard interface: flexdashboard, shiny 
 * Visualization: ggplot, ggcorrplot, ggpubr, ggthemes, leaflet, plotly, multcompView, corrplot, cowplot, plotrix
 
-
-Row {data-height=500}
+Row {data-height=400}
 -----------------------------------------------------------------------
 ### Dataset
     
@@ -474,7 +470,6 @@ DT::datatable(
   width = "100%",
   options = list(deferRender = TRUE, scrollY = 300, scroller = TRUE))
 ```
-
 
 # Citation
 
