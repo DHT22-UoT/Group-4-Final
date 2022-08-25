@@ -11,6 +11,7 @@ runtime: shiny
 # Overview
 
 ```{r setup, include=FALSE}
+# Load necessary packages 
 library(flexdashboard)
 library(shiny)
 library(dplyr)
@@ -22,7 +23,7 @@ library(multcompView)
 library(plotrix)
 
 # Upload all data for all countries
-covid_df <- readRDS(file="country.info.RDS")
+covid_df <- readRDS(file = "country.info.RDS")
 
 # Upload other necessary data
 life_expect_df_2 <- readRDS("life.expect.df.2.RDS")
@@ -30,7 +31,7 @@ life_expect_df <- readRDS("life.expect.df.RDS")
 dt3 <- readRDS("dt3.RDS")
 cld3 <- readRDS("cld3.RDS")
 
-# Summarize data to get mortality and morbidty for an entire region (Overview Page)
+# Summarize data to get mortality and morbidity for an entire region (Overview Page)
 by_region <- covid_df %>% 
   group_by(region) %>%
   filter_at(vars(confirmed,deaths,population), all_vars(!is.na(.))) %>%
@@ -81,7 +82,6 @@ flexdashboard::valueBox(formatC(total_confirmed, format = "d", big.mark = ","),
                         color = "#fcbe42")
 ```
 
-
 ### Value: Total Deaths
 ```{r valuebox_deaths}
 total_deaths <- sum(covid_df$deaths, na.rm=TRUE)
@@ -90,7 +90,6 @@ flexdashboard::valueBox(formatC(total_deaths, format = "d", big.mark = ","),
                         icon = "fas fa-dizzy",
                         color = "#86dff7")
 ```
-
 
 ### Value: Reported Recoveries
 ```{r valuebox_recovery}
@@ -367,10 +366,59 @@ renderPlotly({
 ```
 
 
-# Socioeconomic Data
+# Life Expectancy Data
 
 Inputs {.sidebar}
 -----------------------------------------------------------------------
+
+This section shows the relationship between high mortality rate per 100,000 individuals and high life expectancy at birth in countries across the world. There is a general upward trend in mortality rate as the average life expectancy of a country increases.
+
+These results align with the information provided by the [Center for Disease Control (CDC)](https://www.cdc.gov/aging/covid19/covid19-older-adults.html#:~:text=Increased%20Risk%20of%20Severe%20Illness%20from%20COVID%2D19,-Older%20adults%20are&text=The%20risk%20increases%20for%20people,having%20certain%20underlying%20medical%20conditions.) that risk of severe illness and death from COVID-19 is much greater in older adults.
+
+Countries were categorized on their average life expectancy based on the following criteria from the [World Bank](https://data.worldbank.org/indicator/SP.DYN.LE00.IN?end=2020&start=2020&view=map): 
+
+* **Low: ** < 59.69 years
+* **Low-moderate: **  59.70 - 65.53 years
+* **Moderate: ** 65.54 - 70.06 years
+* **High-moderate:** 70.07 - 74.75 years
+* **High: ** 74.76 years or more  
+
+<br>
+**Chart 6** shows results from the ANOVA analyses where means not sharing any letter are significantly different at the 5% significance level. At alpha = 0.05, mean mortality rate for countries with a high life expectancy at birth differs significantly from that for low, low- moderate, moderate, and high-moderate classes. In addition, the mean mortality rate for countries with high-moderate life expectancy at birth class differs significantly from countries with low, low-moderate, and moderate classification. Overall, the mortality rate is higher for the high and high-moderate classes. All other comparisons are not statistically significant.
+
+**How to use:** to view the mortality rate and the average life expectancy for a specific country, drag your cursor over the point. 
+
+
+Row
+-----------------------------------------------------------------------
+
+### **Chart 5:** Relationship Between COVID-19 Mortality Rate and Life Expectancy per Regions Globally
+```{r Chart 5}
+x1 <- ggplot(region_mort_tb1, aes(text = paste("country: ",country),x=life_expectancy_birth, y=mortality_rate, color = region)) + geom_point() + facet_wrap(.~ region, nrow = 2) + labs(y = "COVID-19 Mortality Rate", x = "Life Expectancy at Birth (years)") + theme_minimal() + theme(axis.title = element_text(face="bold"))
+x1 <- ggplotly(x1)
+x1 %>%
+  layout(showlegend = F)
+```
+
+
+Row 
+-----------------------------------------------------------------------
+### **Chart 6:** ANOVA Result Showing Multiple Comparisons of Relationship Between Mortality Rate and Life Expectancy Class
+```{r Chart 6}
+plot_ly(dt3, x = ~life_expect_class, y = ~mean_mortality_rate, type = 'bar', text = ~cld3$Letters, textposition = "none", colors = c("#16c91f", "hot pink", "#31befd"), color = ~cld3$Letters, error_y = list(array = ~standard_error, color = 'grey')) %>% layout(xaxis = list(title = '<b>Life Expectancy at Birth Class</b>'), yaxis = list(title = '<b>Mean COVID-19 Mortality Rate</b>', range = c(0, 185)))
+```
+
+### **Chart 7:** Global Life Expectancy at Birth in Relation to Mortality Rate 
+```{r Chart 7}
+x4 <- ggplot(region_mort_tb1, aes(text = paste("country: ",country), x=life_expectancy_birth, y=mortality_rate, colour=region)) + 
+           geom_point() + theme_minimal() + labs(y = "COVID-19 Mortality Rate", x = "Life Expectancy at Birth (years)") + theme(axis.title = element_text(face="bold"))
+                 
+x4 <- ggplotly(x4) 
+x4 %>%
+  layout(legend = list(title=list(text = "Region"))) %>%
+  layout(legend = list(orientation = 'v', x = 0.01, y = 1)) %>%
+  layout(legend = list(font = list(size = 9)))
+```
 
 
 # About
@@ -411,7 +459,7 @@ The following packages were used to construct the dashboard:
 * Visualization: ggplot, ggcorrplot, ggpubr, ggthemes, leaflet, plotly, multcompView, corrplot, cowplot, plotrix
 
 
-Row {data-height=700}
+Row {data-height=500}
 -----------------------------------------------------------------------
 ### Dataset
     
@@ -433,6 +481,8 @@ DT::datatable(
 Lau, H., et al. “Evaluating the Massive Underreporting and Undertesting of COVID-19 Cases in Multiple Global Epicenters.” Pulmonology, no. 2, Elsevier BV, Mar. 2021, pp. 110–15. Crossref, doi:10.1016/j.pulmoe.2020.05.015.
 
 Wong, David W. S., and Yun Li. “Spreading of COVID-19: Density Matters.” PLOS ONE, edited by Bing Xue, no. 12, Public Library of Science (PLoS), Dec. 2020, p. e0242398. Crossref, doi:10.1371/journal.pone.0242398.
+
+“Older Adults Risks and Vaccine Information | Cdc.” Centers for Disease Control and Prevention, Center for Disease Control and Prevention, 4 Aug. 2021, https://www.cdc.gov/aging/covid19/covid19-older-adults.html#:~:text=Increased%20Risk%20of%20Severe%20Illness%20from%20COVID%2D19,-Older%20adults%20are&text=The%20risk%20increases%20for%20people,having%20certain%20underlying%20medical%20conditions.
 
 
 
