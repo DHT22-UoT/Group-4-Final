@@ -369,7 +369,7 @@ The COVID-19 Data Repository operated by the **Johns Hopkins University Center f
 <br>
 **Assumptions**  
 
-Not all socioeconomic indicators contained up-to-date data from 2020. In these cases, data from earlier years were used for our analysis and the construction of the dashboard. Therefore, it was assumed that the values of these indicators have not changed significantly between their year of measurement and 2021. 
+Not all socioeconomic indicators contained up-to-date data from 2020. In these cases, data from earlier years were used for our analysis and the construction of the dashboard. Therefore, it was assumed that the values of these indicators have not changed significantly between their year of measurement and 2022. 
 
 <br>
 **Packages** 
