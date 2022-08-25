@@ -72,7 +72,7 @@ Row
 
 ### **Chart 5:** Relationship Between COVID-19 Mortality Rate and Life Expectancy per Regions Globally
 ```{r Chart 5}
-x1 <- ggplot(region_mort_tb1, aes(text = paste("country: ",country),x=life_expectancy_birth, y=mortality_rate, color = region)) + geom_point() + facet_wrap(.~ region, nrow = 2) + labs(y = "COVID-19 Mortality Rate", x = "Life Expectancy at Birth (years)") + theme_minimal()
+x1 <- ggplot(region_mort_tb1, aes(text = paste("country: ",country),x=life_expectancy_birth, y=mortality_rate, color = region)) + geom_point() + facet_wrap(.~ region, nrow = 2) + labs(y = "COVID-19 Mortality Rate", x = "Life Expectancy at Birth (years)") + theme_minimal() + theme(axis.title = element_text(face="bold"))
 
 x1 <- ggplotly(x1)
 
@@ -85,13 +85,13 @@ Row
 -----------------------------------------------------------------------
 ### **Chart 6:** ANOVA Result Showing Multiple Comparisons of Relationship Between Mortality Rate and Life Expectancy Class
 ```{r Chart 6}
-plot_ly(dt3, x = ~life_expect_class, y = ~mean_mortality_rate, type = 'bar', text = ~cld3$Letters, textposition = "none", colors = c("#16c91f", "hot pink", "#31befd"), color = ~cld3$Letters, error_y = list(array = ~standard_error, color = 'grey')) %>% layout(xaxis = list(title = 'Life Expectancy at Birth Class'), yaxis = list(title = 'Mean COVID-19 Mortality Rate', range = c(0, 185)))
+plot_ly(dt3, x = ~life_expect_class, y = ~mean_mortality_rate, type = 'bar', text = ~cld3$Letters, textposition = "none", colors = c("#16c91f", "hot pink", "#31befd"), color = ~cld3$Letters, error_y = list(array = ~standard_error, color = 'grey')) %>% layout(xaxis = list(title = '<b>Life Expectancy at Birth Class</b>'), yaxis = list(title = '<b>Mean COVID-19 Mortality Rate</b>', range = c(0, 185)))
 ```
 
 ### **Chart 7:** Global Life Expectancy at Birth in Relation to Mortality Rate 
 ```{r Chart 7}
 x4 <- ggplot(region_mort_tb1, aes(text = paste("country: ",country), x=life_expectancy_birth, y=mortality_rate, colour=region)) + 
-           geom_point() + theme_minimal() + labs(y = "COVID-19 Mortality Rate", x = "Life Expectancy at Birth (years)")
+           geom_point() + theme_minimal() + labs(y = "COVID-19 Mortality Rate", x = "Life Expectancy at Birth (years)") + theme(axis.title = element_text(face="bold"))
                  
 x4 <- ggplotly(x4) 
 
