@@ -121,6 +121,10 @@ country_info <- country_info %>%
   mutate(recovered_ratio = recovered / population)
 
 
+<<<<<<< HEAD
 saveRDS(country_info, file = "country.info.RDS")
 
 
+=======
+saveRDS(country_info, file = "country.info.RDS")
+>>>>>>> f6fda0b522f852ba02e2a3ec7d625943bf99f3fb
